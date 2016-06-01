@@ -19,7 +19,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.data = DataStore()
         self.solver_data = SolverData()
-        self.solver = Solver(self.data, self.solver_data)
+        self.solver = Solver(self.graphicsView, self.data, self.solver_data)
         self.update_data_table()
         self.setup_data()
         self.value_connections()
@@ -28,10 +28,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.combobox_coming_sequence = []
         self.combobox_going_sequence = []
         self.statusBar().showMessage('Ready')
-#        self.setup_sequence_solver()
+        self.graphicsView.data = self.data
+        self.graphicsView.parent = self
         self.load_generated_data()
- #       self.setup_simulator()
-      #  self.graphicsView.parent = self
+
         self.showing_result = []
         self.result_times = {}
         self.function_type = 'normal'
@@ -74,6 +74,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def solve_data_set(self):
         self.solver.solve_data_set()
+
+    def solve_simulator(self):
+        self.solver.simulator.data = self.data
+        self.solver.solve_simluation()
+
+    def step_simulator(self):
+        self.solver.simulation_step()
 
     def set_data_set_number(self, value):
         self.solver_data.data_set_number = value - 1
@@ -180,14 +187,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #self.stop_data_set_solve_button.clicked.connect(self.stop)
 
         self.solve_data_set_button.clicked.connect(self.solve_data_set)
-        #self.solve_one_sequence_button.clicked.connect(self.solve_one_sequence)
+        self.solve_one_sequence_button.clicked.connect(self.solve_simulator)
 
         self.actionNew_Data.triggered.connect(self.new_data)
         self.actionSave_Data.triggered.connect(self.save_data)
         self.actionLoad_Data.triggered.connect(self.load_data)
 
         #self.pause_button.clicked.connect(self.pause)
-        #self.resume_button.clicked.connect(self.resume)
+        self.resume_button.clicked.connect(self.step_simulator)
 
         self.generate_times_button.clicked.connect(self.generate_times)
         self.generate_new_boundaries_button.clicked.connect(self.new_generate_times)

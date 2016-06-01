@@ -1,18 +1,19 @@
 from src.model_element import ModelElement
+from src.station import Station
 
 
 class ReceivingDoor(ModelElement):
-    def __init__(self, name):
+    def __init__(self, name, station=Station()):
         ModelElement.__init__(self)
         self.element_name = name
-        self.state_list = ["empty", "full"]
-        self.state_functions['empty'] = self.empty
-        self.state_functions['full'] = self.full
+        self.station = station
+        self.state_list = ["door"]
+        self.state_functions['door'] = self.door
+        self.truck_list = []
+        self.door_empty = True
 
-    def empty(self):
-        pass
-        #print(self.element_name, "Empty")
+    def door(self):
+        if self.check_next_time():
+            self.station.good_store.add_good_dict(self.good_store.good_dictionary)
+            self.good_store.reset_goods()
 
-    def full(self):
-        pass
-        #print(self.element_name, "Full")

@@ -1,10 +1,8 @@
-from src.model_element import ModelElement
 from src.good_list import GoodList
 
 
-class GoodStore(ModelElement):
+class GoodStore():
     def __init__(self):
-        ModelElement.__init__(self)
         self.good_dictionary = {}
         self.good_amounts = {}
 
@@ -24,9 +22,9 @@ class GoodStore(ModelElement):
     def calculate_total(self):
         for good_name, good_list in self.good_dictionary.items():
             self.good_amounts[good_name] = good_list.calculate_total()
+        return sum(self.good_amounts.values())
 
     def check_enough(self, good_dict):
-        # good dick: [name] = amount
         enough = False
         for good_name, good_amount in good_dict.items():
             if good_name in self.good_amounts.keys():
@@ -58,3 +56,16 @@ class GoodStore(ModelElement):
         for good_name, good_list in good_dict.items():
             for good in good_list.good_list:
                 self.add_good(good.good_amount, good_name, good.income_truck)
+
+    def reset_goods(self):
+        for good_name, good_list in self.good_dictionary.items():
+            self.good_dictionary[good_name] = GoodList(good_name)
+            self.good_amounts[good_name] = 0
+
+    def print_goods(self):
+        t = ''
+        for good_name, good_list in self.good_dictionary.items():
+            t += "Good Name:{0}\n".format(good_name)
+            t += good_list.print_goods()
+        return t
+

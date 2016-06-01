@@ -16,7 +16,10 @@ class Simulator(QGraphicsView):
         self.door_positions = {}
         self.truck_positions = {}
         self.doors = {}
-        self.truck_states = None
+        self.truck_states = {}
+        self.trucks = {}
+        self.doors = {}
+        self.station = None
         self.pause = None
         self.dialog = []
 
@@ -30,7 +33,7 @@ class Simulator(QGraphicsView):
     def setup_station(self):
         self.scn.addItem(QGraphicsRectItem(-400, -200, 800, 400))
         self.scn.addItem(QGraphicsLineItem(-100, -200, -100,200))
-        line =self.scn.addItem(QGraphicsLineItem(100, -200, 100, 200))
+        line = self.scn.addItem(QGraphicsLineItem(100, -200, 100, 200))
         self.a = QGraphicsTextItem('Station')
         self.a.setPos(-20, -180)
         self.scn.addItem(self.a)
@@ -40,6 +43,7 @@ class Simulator(QGraphicsView):
         try:
             step = 400 / self.data.number_of_receiving_doors
             for i in range(self.data.number_of_receiving_doors):
+
                 name = 'receiving' + str(i)
                 self.door_positions[name] = [-250, -200 + step * (i + 1) - step/2]
                 door = QGraphicsTextItem(name)
@@ -69,6 +73,7 @@ class Simulator(QGraphicsView):
             self.truck_positions[name] = truck
             truck.setPos(-480, -180 + i*step)
             self.scn.addItem(truck)
+            self.truck_states[name] = 'coming'
 
         for i in range(self.data.number_of_compound_trucks):
             name = 'compound' + str(i)
@@ -76,6 +81,7 @@ class Simulator(QGraphicsView):
             self.truck_positions[name] = truck
             truck.setPos(-480, -180 + (i + self.data.number_of_inbound_trucks)*step)
             self.scn.addItem(truck)
+            self.truck_states[name] = 'coming'
 
         for i in range(self.data.number_of_outbound_trucks):
             name = 'outbound' + str(i)
@@ -83,78 +89,84 @@ class Simulator(QGraphicsView):
             self.truck_positions[name] = truck
             truck.setPos(430, -180 + i*step)
             self.scn.addItem(truck)
+            self.truck_states[name] = 'coming'
+
+    def change_signal(self, time, state, element_name):
+        print(element_name, state)
+        self.truck_states[element_name] = state
+        self.update_scene()
 
     def update_scene(self):
         step = 50
         for i in range(self.data.number_of_inbound_trucks):
             name = 'inbound' + str(i)
             truck = self.truck_positions[name]
-            if self.truck_states[name][0] == 'waiting_to_deploy':
+            if self.truck_states[name] == 'waiting_to_deploy':
                 truck.setPos(-390, -180 + i*step)
-            elif self.truck_states[name][0] == 'changeover':
+            elif self.truck_states[name] == 'changeover_deploy':
                 truck.setDefaultTextColor(Qt.red)
-                truck.setPos(*self.door_positions[self.truck_states[name][1]])
-            elif self.truck_states[name][0] == 'deploying':
+                truck.setPos(*self.door_positions[self.trucks[name].first_door.element_name])
+            elif self.truck_states[name] == 'deploying':
                 truck.setDefaultTextColor(Qt.green)
-            elif self.truck_states[name][0] == 'changeover2':
+            elif self.truck_states[name] == 'changeover_fin':
                 truck.setDefaultTextColor(Qt.red)
-            elif self.truck_states[name][0] == 'done':
+            elif self.truck_states[name] == 'done':
                 truck.setPos(-400 + i*50, 220)
 
         for i in range(self.data.number_of_compound_trucks):
             name = 'compound' + str(i)
             truck = self.truck_positions[name]
-            if self.truck_states[name][0] == 'waiting_to_deploy':
+            if self.truck_states[name] == 'waiting_to_deploy':
                 truck.setPos(-390, -180 + (i + self.data.number_of_inbound_trucks)*step)
-            elif self.truck_states[name][0] == 'changeover':
-                truck.setPos(*self.door_positions[self.truck_states[name][1]])
-            elif self.truck_states[name][0] == 'deploying':
-                truck.setDefaultTextColor(Qt.green)
-            elif self.truck_states[name][0] == 'changeover2':
+            elif self.truck_states[name] == 'changeover_deploy':
                 truck.setDefaultTextColor(Qt.red)
-            elif self.truck_states[name][0] == 'truck_transfer':
+                truck.setPos(*self.door_positions[self.trucks[name].first_door.element_name])
+            elif self.truck_states[name] == 'deploying':
+                truck.setDefaultTextColor(Qt.green)
+            elif self.truck_states[name] == 'changeover_mid':
+                truck.setDefaultTextColor(Qt.red)
+            elif self.truck_states[name] == 'truck_transfer':
                 truck.setPos(-100 + i * 70, -220)
-            if self.truck_states[name][0] == 'waiting_to_load':
+            if self.truck_states[name] == 'waiting_to_load':
                 truck.setPos(320, -180 + (self.data.number_of_outbound_trucks + i)*step)
-            elif self.truck_states[name][0] == 'changeover3':
+            elif self.truck_states[name] == 'changeover_load':
                 truck.setDefaultTextColor(Qt.red)
-                truck.setPos(*self.door_positions[self.truck_states[name][1]])
-            elif self.truck_states[name][0] == 'not_ready_to_load':
+                truck.setPos(*self.door_positions[self.trucks[name].first_door.element_name])
+            elif self.truck_states[name] == 'not_ready_to_load':
                 truck.setDefaultTextColor(Qt.blue)
-            elif self.truck_states[name][0] == 'ready_to_load':
+            elif self.truck_states[name] == 'ready_to_load':
                 truck.setDefaultTextColor(Qt.yellow)
-            elif self.truck_states[name][0] == 'must_load':
+            elif self.truck_states[name] == 'must_load':
                 truck.setDefaultTextColor(Qt.gray)
-            elif self.truck_states[name][0] == 'loading':
+            elif self.truck_states[name] == 'loading':
                 truck.setDefaultTextColor(Qt.green)
-            elif self.truck_states[name][0] == 'changeover4':
+            elif self.truck_states[name] == 'changeover_fin':
                 truck.setDefaultTextColor(Qt.red)
-            elif self.truck_states[name][0] == 'done':
+            elif self.truck_states[name]== 'done':
                 truck.setPos(350 - (self.data.number_of_outbound_trucks + i)*80, 220)
 
         for i in range(self.data.number_of_outbound_trucks):
             name = 'outbound' + str(i)
             truck = self.truck_positions[name]
-            if self.truck_states[name][0] == 'waiting_to_load':
+            if self.truck_states[name] == 'waiting_to_load':
                 truck.setPos(320, -180 + i*step)
-            elif self.truck_states[name][0] == 'changeover':
+            elif self.truck_states[name] == 'changeover_load':
                 truck.setDefaultTextColor(Qt.red)
-                truck.setPos(*self.door_positions[self.truck_states[name][1]])
-            elif self.truck_states[name][0] == 'not_ready_to_load':
+                truck.setPos(*self.door_positions[self.trucks[name].first_door.element_name])
+            elif self.truck_states[name] == 'not_enough_goods':
                 truck.setDefaultTextColor(Qt.blue)
-            elif self.truck_states[name][0] == 'ready_to_load':
+            elif self.truck_states[name] == 'ready_to_load':
                 truck.setDefaultTextColor(Qt.yellow)
-            elif self.truck_states[name][0] == 'must_load':
+            elif self.truck_states[name] == 'must_load':
                 truck.setDefaultTextColor(Qt.gray)
-            elif self.truck_states[name][0] == 'loading':
+            elif self.truck_states[name] == 'loading':
                 truck.setDefaultTextColor(Qt.green)
-            elif self.truck_states[name][0] == 'changeover2':
+            elif self.truck_states[name] == 'changeover_fin':
                 truck.setDefaultTextColor(Qt.red)
-            elif self.truck_states[name][0] == 'done':
+            elif self.truck_states[name] == 'done':
                 truck.setPos(350 - i*80, 220)
 
     def mouseDoubleClickEvent(self, event):
-        self.parent.pause()
         item = self.itemAt(event.pos())
         name = item.toPlainText()
         self.show_dialog(name)
@@ -162,15 +174,19 @@ class Simulator(QGraphicsView):
     def show_dialog(self, name):
         dialog = QTextEdit()
         dialog.setWindowTitle(name)
-        if name in self.truck_positions.keys():
-            dialog.setText(self.parent.solver.truck_list[name].good.goods_in_text())
+        if name in self.trucks.keys():
+            dialog.append(self.trucks[name].good_store.print_goods())
+            dialog.append(self.trucks[name].print_info())
         elif name in self.doors.keys():
-            if name[0] == 'r':
-                for good in self.parent.solver.door_list[name].goods_list:
-                    dialog.append(good.goods_in_text())
-            else:
-                dialog.append(self.parent.solver.door_list[name].goods.goods_in_text())
+            dialog.append(self.doors[name].good_store.print_goods())
+            # if name[0] == 'r':
+            #     for good in self.parent.solver.door_list[name].goods_list:
+            #         dialog.append(good.goods_in_text())
+            # else:
+            #     dialog.append(self.parent.solver.door_list[name].goods.goods_in_text())
         else:
-                dialog.append( self.parent.solver.station.goods_list.goods_in_text())
+            dialog.append(self.station.good_store.print_goods())
+
+                # dialog.append( self.parent.solver.station.goods_list.goods_in_text())
         self.dialog.append(dialog)
         dialog.show()

@@ -55,7 +55,8 @@ class GoodList():
         for i in (sorted(zero_list, reverse=True)):
             del self.good_list[i]
 
-
     def print_goods(self):
+        a = ' '
         for good in self.good_list:
-            print("Good Name:", good.good_index, "Goood Amount: ", good.good_amount)
+            a += "Goood Amount:{0} Coming Truck:{1}\n".format(good.good_amount, good.income_truck)
+        return a
