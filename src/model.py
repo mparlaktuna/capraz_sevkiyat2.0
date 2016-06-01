@@ -97,16 +97,21 @@ class Model(QThread):
         for truck in self.inbound_trucks.values():
             coming_door_name = self.current_sequence.coming_sequence_element.get_door_name(truck.element_name)
             truck.first_door = self.all_doors[coming_door_name]
+            truck.current_door = truck.first_door
+            truck.second_door = truck.first_door
 
         for truck in self.outbound_trucks.values():
             going_door_name = self.current_sequence.going_sequence_element.get_door_name(truck.element_name)
-            truck.first_door = self.all_doors[going_door_name]
+            truck.second_door = self.all_doors[going_door_name]
+            truck.current_door = truck.second_door
+            truck.first_door = truck.second_door
 
         for truck in self.compound_trucks.values():
             coming_door_name = self.current_sequence.coming_sequence_element.get_door_name(truck.element_name)
             going_door_name = self.current_sequence.going_sequence_element.get_door_name(truck.element_name)
             truck.first_door = self.all_doors[coming_door_name]
-            truck.going_door = self.all_doors[going_door_name]
+            truck.second_door = self.all_doors[going_door_name]
+            truck.current_door = truck.first_door
 
         for door in self.receiving_doors.values():
             door.truck_list = self.current_sequence.coming_sequence_element.sequence_dict[door.element_name]
@@ -146,6 +151,7 @@ class Model(QThread):
             truck.good_loading_time = self.data.loading_time
             truck.good_unloading_time = self.data.unloading_time
             truck.good_transfer_time = self.data.good_transfer_time
+            truck.station = self.station
 
     def set_goods(self):
         for i, truck in enumerate(self.inbound_trucks.values()):
@@ -160,6 +166,9 @@ class Model(QThread):
             truck.add_good_types(self.data.number_of_goods)
             truck.add_start_goods(self.data.compound_coming_goods[i])
             truck.add_last_goods(self.data.compound_going_goods[i])
+            truck.truck_transfer = self.data.truck_transfer_time
+
+        self.station.good_store.add_good_type(self.data.number_of_goods)
 
     def set_states(self):
         for truck in self.all_trucks.values():

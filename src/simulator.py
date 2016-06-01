@@ -120,7 +120,7 @@ class Simulator(QGraphicsView):
                 truck.setPos(-390, -180 + (i + self.data.number_of_inbound_trucks)*step)
             elif self.truck_states[name] == 'changeover_deploy':
                 truck.setDefaultTextColor(Qt.red)
-                truck.setPos(*self.door_positions[self.trucks[name].first_door.element_name])
+                truck.setPos(*self.door_positions[self.trucks[name].current_door.element_name])
             elif self.truck_states[name] == 'deploying':
                 truck.setDefaultTextColor(Qt.green)
             elif self.truck_states[name] == 'changeover_mid':
@@ -131,7 +131,7 @@ class Simulator(QGraphicsView):
                 truck.setPos(320, -180 + (self.data.number_of_outbound_trucks + i)*step)
             elif self.truck_states[name] == 'changeover_load':
                 truck.setDefaultTextColor(Qt.red)
-                truck.setPos(*self.door_positions[self.trucks[name].first_door.element_name])
+                truck.setPos(*self.door_positions[self.trucks[name].current_door.element_name])
             elif self.truck_states[name] == 'not_ready_to_load':
                 truck.setDefaultTextColor(Qt.blue)
             elif self.truck_states[name] == 'ready_to_load':
@@ -152,7 +152,7 @@ class Simulator(QGraphicsView):
                 truck.setPos(320, -180 + i*step)
             elif self.truck_states[name] == 'changeover_load':
                 truck.setDefaultTextColor(Qt.red)
-                truck.setPos(*self.door_positions[self.trucks[name].first_door.element_name])
+                truck.setPos(*self.door_positions[self.trucks[name].current_door.element_name])
             elif self.truck_states[name] == 'not_enough_goods':
                 truck.setDefaultTextColor(Qt.blue)
             elif self.truck_states[name] == 'ready_to_load':
@@ -179,14 +179,7 @@ class Simulator(QGraphicsView):
             dialog.append(self.trucks[name].print_info())
         elif name in self.doors.keys():
             dialog.append(self.doors[name].good_store.print_goods())
-            # if name[0] == 'r':
-            #     for good in self.parent.solver.door_list[name].goods_list:
-            #         dialog.append(good.goods_in_text())
-            # else:
-            #     dialog.append(self.parent.solver.door_list[name].goods.goods_in_text())
         else:
             dialog.append(self.station.good_store.print_goods())
-
-                # dialog.append( self.parent.solver.station.goods_list.goods_in_text())
         self.dialog.append(dialog)
         dialog.show()
