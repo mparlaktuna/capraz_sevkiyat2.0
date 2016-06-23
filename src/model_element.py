@@ -4,11 +4,6 @@ from src.good_store import GoodStore
 
 
 class ModelElement(QObject):
-    done_signal = pyqtSignal(int, str, name='done')
-    time_signal = pyqtSignal(int, str, name='next_time')
-    state_finish = pyqtSignal(int, str, str, name='state_finish')
-    state_start = pyqtSignal(int, str, str, name='state_start')
-    state_name_signal = pyqtSignal(int, str, str, name='state_name')
 
     def __init__(self):
         QObject.__init__(self)
@@ -34,12 +29,7 @@ class ModelElement(QObject):
         self.current_state_name = self.state_list[self.state]
         self.state_functions[self.current_state_name]()
         self.current_state_name = self.state_list[self.state]
-        self.state_signal_emit()
         self.step_finish = True
-
-    def state_signal_emit(self):
-        self.state_name_signal.emit(self.current_time, self.current_state_name, self.element_name)
 
     def done(self):
         self.current_state_name = 'done'
-        self.done_signal.emit(self.current_time, self.element_name)

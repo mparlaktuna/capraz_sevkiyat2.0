@@ -15,5 +15,4 @@ class CompoundTruck(Truck):
     def truck_transfer(self):
         if self.check_next_time():
             self.next_state_time = self.current_time + 1
-            self.time_signal.emit(self.next_state_time, self.element_name)
             self.state += 1

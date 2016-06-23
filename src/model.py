@@ -11,7 +11,6 @@ from src.sequnce import Sequence
 
 
 class Model(QThread):
-    next_time_signal = pyqtSignal(int, name='time')
 
     def __init__(self):
         QThread.__init__(self)
@@ -35,7 +34,6 @@ class Model(QThread):
     def set_data(self, data_number, data=DataStore()):
         self.data = data
         self.data_set_number = data_number
-        print("Setting Data Set:", data_number)
         self.station = Station()
 
         for i in range(self.data.number_of_inbound_trucks):
@@ -67,7 +65,6 @@ class Model(QThread):
             door.station = self.station
             self.all_doors[name] = door
             self.element_list.append(door)
-            self.next_time_signal.connect(door.step_forward)
 
         for i in range(self.data.number_of_shipping_doors):
             name = 'shipping' + str(i)
@@ -75,23 +72,16 @@ class Model(QThread):
             self.shipping_doors[name] = door
             door.station = self.station
             self.element_list.append(door)
-            self.next_time_signal.connect(door.step_forward)
             self.all_doors[name] = door
 
         for truck in self.all_trucks.values():
             self.element_list.append(truck)
-            truck.time_signal.connect(self.add_time)
-            self.next_time_signal.connect(truck.step_forward)
             truck.set_coming_time(self.data.arrival_times[self.data_set_number][truck.element_name])
 
         self.set_coming_times()
         self.set_goods()
         if self.simulation_on:
-            self.simulator_connect()
-
-    def simulator_connect(self):
-        for truck in self.all_trucks.values():
-            truck.state_name_signal.connect(self.simulator.change_signal)
+            pass
 
     def set_sequence(self):
         for truck in self.inbound_trucks.values():
@@ -120,7 +110,6 @@ class Model(QThread):
             door.truck_list = self.current_sequence.going_sequence_element.sequence_dict[door.element_name]
 
     def reset_model(self):
-        print("Model Reset")
         self.current_time = 0
         self.time_list = []
         self.set_states()
@@ -179,8 +168,6 @@ class Model(QThread):
         next_time = self.time_list.pop(0)
         if not self.time_list:
             self.time_list.append(next_time + 1)
-        print(next_time)
-        print(self.time_list)
         self.next_time_signal.emit(next_time)
 
     def run(self):

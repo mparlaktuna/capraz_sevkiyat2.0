@@ -25,7 +25,6 @@ class Truck(ModelElement):
 
     def set_coming_time(self, coming_time):
         self.next_state_time = coming_time
-        self.time_signal.emit(self.next_state_time, self.element_name)
 
     def add_good_types(self, number):
         for i in range(number):
@@ -34,7 +33,6 @@ class Truck(ModelElement):
     def add_start_goods(self, goods):
         for i, amount in enumerate(goods):
             self.good_store.add_good(amount, i, self.element_name)
-        #self.good_store.print_goods()
 
     def add_last_goods(self, goods):
         for i, amount in enumerate(goods):
@@ -42,12 +40,9 @@ class Truck(ModelElement):
 
     def coming(self):
         if self.check_next_time():
-            print("Arrived: ", self.element_name)
             if self.current_door.door_empty:
-                print('empty')
                 self.current_door.door_empty = False
                 self.next_state_time = self.current_time + self.changeover_time
-                self.time_signal.emit(self.next_state_time, self.element_name)
 
                 self.state += 2
             else:
@@ -65,20 +60,17 @@ class Truck(ModelElement):
         if self.current_door.door_empty:
             self.current_door.door_empty = False
             self.next_state_time = self.current_time + self.changeover_time
-            self.time_signal.emit(self.next_state_time, self.element_name)
             self.state += 1
 
     def waiting_for_shipping_door(self):
         if self.current_door.door_empty:
             self.current_door.door_empty = False
             self.next_state_time = self.current_time + self.changeover_time
-            self.time_signal.emit(self.next_state_time, self.element_name)
             self.state += 1
 
     def not_enough_goods(self):
         if self.station.good_store.check_enough(self.last_good_dict):
             self.next_state_time = self.current_time + self.good_store.calculate_total() * self.good_loading_time
-            self.time_signal.emit(self.next_state_time, self.element_name)
             self.state += 1
 
     def loading(self):
@@ -86,7 +78,6 @@ class Truck(ModelElement):
             self.station.good_store.remove_good(self.last_good_dict)
             self.add_start_goods(self.last_good_dict.values())
             self.next_state_time = self.current_time + self.changeover_time
-            self.time_signal.emit(self.next_state_time, self.element_name)
             self.state += 1
 
     def deploying(self):
@@ -94,9 +85,7 @@ class Truck(ModelElement):
             self.current_door.good_store.add_good_dict(self.good_store.good_dictionary)
             self.good_store.reset_goods()
             self.current_door.next_state_time = self.current_time + self.good_transfer_time
-            self.time_signal.emit(self.current_door.next_state_time, self.current_door.element_name)
             self.next_state_time = self.current_time + self.changeover_time
-            self.time_signal.emit(self.next_state_time, self.element_name)
             self.state += 1
 
     def changeover(self):
@@ -104,23 +93,19 @@ class Truck(ModelElement):
             if self.current_state_name == 'changeover_load':
                 if self.station.good_store.check_enough(self.last_good_dict):
                     self.next_state_time = self.current_time + self.good_store.calculate_total() * self.good_loading_time
-                    self.time_signal.emit(self.next_state_time, self.element_name)
                     self.state += 2
                 else:
                     self.state += 1
             if self.current_state_name == 'changeover_fin':
                 self.current_door.door_empty = True
                 self.next_state_time = self.current_time + 1
-                self.time_signal.emit(self.next_state_time, self.element_name)
                 self.state += 1
             if self.current_state_name == 'changeover_deploy':
                 self.next_state_time = self.current_time + self.good_store.calculate_total() * self.good_unloading_time
-                self.time_signal.emit(self.next_state_time, self.element_name)
                 self.state += 1
             if self.current_state_name == 'changeover_mid':
                 self.current_door.door_empty = True
                 self.next_state_time = self.current_time + self.truck_transfer
-                self.time_signal.emit(self.next_state_time, self.element_name)
                 self.current_door = self.second_door
                 self.state += 1
 
