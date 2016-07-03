@@ -11,6 +11,7 @@ from models.data_set_model import DataSetModel
 from models.good_table_model import GoodTableModel
 from models.time_table_model import TimeTableModel
 from src.sequence_solver import SequenceSolver
+from src.enter_sequence import EnterSequenceWidget
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -37,6 +38,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.solution_number = 0
         self.sequence_solver = SequenceSolver()
         self.solution_results = dict()
+        self.enter_sequence_widget = EnterSequenceWidget(self.data)
 
 
     def setup_data(self):
@@ -186,6 +188,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.generate_new_boundaries_button.clicked.connect(self.new_generate_times)
         self.solve_data_set_button.clicked.connect(self.solve_data_set)
         self.solve_one_sequence_button.clicked.connect(self.solve_one_sequence)
+        self.enter_sequence_button.clicked.connect(self.enter_sequence)
 
     def solve_data_set(self):
         pass
@@ -194,7 +197,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def solve_one_sequence(self):
         self.solution_name = "simulation_" + self.solver_data.funtion_type + "_" + str(self.solution_number)
         self.sequence_solver.set_data(self.solver_data, self.data)
-
         #get sequence
 
 
@@ -227,6 +229,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pickle.dump(self.data,  open(file_name, 'wb'))
         except Exception as e:
             pass
+
+    def enter_sequence(self):
+        self.enter_sequence_widget = EnterSequenceWidget(self.data)
+        self.enter_sequence_widget.show()
 
     def gams_output(self):
         file_name, _ = QFileDialog.getSaveFileName(self, 'Save file', '/home')

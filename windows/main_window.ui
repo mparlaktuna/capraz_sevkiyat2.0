@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_9">
     <item row="0" column="0">
-     <widget class="QTabWidget" name="tab_view">
+     <widget class="QTabWidget" name="enterSequenceButton">
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
       </property>
@@ -27,7 +27,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideLeft</enum>
@@ -439,7 +439,7 @@
           <item>
            <widget class="QStackedWidget" name="stackedWidget">
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="page">
              <layout class="QGridLayout" name="gridLayout_4">
@@ -629,6 +629,13 @@
            <widget class="QPushButton" name="solve_one_sequence_button">
             <property name="text">
              <string>Run</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="enter_sequence_button">
+            <property name="text">
+             <string>Enter Sequence</string>
             </property>
            </widget>
           </item>
