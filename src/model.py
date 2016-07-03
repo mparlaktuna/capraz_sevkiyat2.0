@@ -38,7 +38,7 @@ class Model(QThread):
         self.solver_data = solver_data
         self.data_set_number = self.solver_data.data_set_number
         print("Setting Data Set:", self.data_set_number)
-       # self.station = Station()
+        self.station = Station()
 
         for i in range(self.data.number_of_inbound_trucks):
             name = 'inbound' + str(i)
@@ -83,7 +83,7 @@ class Model(QThread):
             self.element_list.append(truck)
 
         self.set_coming_times()
-        #self.set_goods()
+        self.set_goods()
 
     def set_sequence(self):
         for truck in self.inbound_trucks.values():
@@ -113,30 +113,27 @@ class Model(QThread):
 
     def set_coming_times(self):
         for truck in self.all_trucks.values():
-            pass
-            # truck.set_coming_time(self.data.arrival_times[self.data_set_number][truck.element_name])
-            # truck.changeover_time = self.data.changeover_time
-            # truck.good_loading_time = self.data.loading_time
-            # truck.good_unloading_time = self.data.unloading_time
-            # truck.good_transfer_time = self.data.good_transfer_time
-            # truck.station = self.station
+            truck.coming_time = self.data.arrival_times[self.data_set_number][truck.element_name]
+            truck.changeover_time = self.data.changeover_time
+            truck.good_loading_time = self.data.loading_time
+            truck.good_unloading_time = self.data.unloading_time
+            truck.good_transfer_time = self.data.good_transfer_time
+            truck.station = self.station
 
     def set_goods(self):
         for i, truck in enumerate(self.inbound_trucks.values()):
-            truck.add_good_types(self.data.number_of_goods)
             truck.add_start_goods(self.data.inbound_goods[i])
 
         for i, truck in enumerate(self.outbound_trucks.values()):
-            truck.add_good_types(self.data.number_of_goods)
             truck.add_last_goods(self.data.outbound_goods[i])
 
         for i, truck in enumerate(self.compound_trucks.values()):
-            truck.add_good_types(self.data.number_of_goods)
             truck.add_start_goods(self.data.compound_coming_goods[i])
             truck.add_last_goods(self.data.compound_going_goods[i])
             truck.truck_transfer = self.data.truck_transfer_time
 
-        #self.station.good_store.add_good_type(self.data.number_of_goods)
+        for i in range(self.data.number_of_goods):
+            self.station.good_store.add_good_type(i)
 
     def set_states(self):
         for truck in self.all_trucks.values():

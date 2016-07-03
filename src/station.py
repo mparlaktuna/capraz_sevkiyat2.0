@@ -1,4 +1,6 @@
+from src.good_store import GoodStore
+
 
 class Station():
     def __init__(self):
-        pass
+        self.good_store = GoodStore()
