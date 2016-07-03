@@ -9,6 +9,7 @@ from src.receiving_doors import ReceivingDoor
 from src.shipping_door import ShippingDoor
 from src.sequnce import Sequence
 from src.solver_data import SolverData
+from src.iteration_results import IterationResults
 
 
 class Model(QThread):
@@ -83,9 +84,11 @@ class Model(QThread):
             self.element_list.append(truck)
 
         self.set_coming_times()
+        self.set_states()
         self.set_goods()
 
-    def set_sequence(self):
+    def set_sequence(self, sequence):
+        self.current_sequence = sequence
         for truck in self.inbound_trucks.values():
             coming_door_name = self.current_sequence.coming_sequence_element.get_door_name(truck.element_name)
             truck.first_door = self.all_doors[coming_door_name]
@@ -171,12 +174,18 @@ class Model(QThread):
         self.next_time_signal.emit(next_time)
 
     def run(self):
+        #add timer
         while not self.done:
             self.check_done()
             if self.check_step_finish():
                 self.clear_step_finish()
                 self.next_time()
-    #
+
+    def generate_results(self, results=IterationResults()):
+        for truck in self.all_trucks:
+            results.truck_results[truck.truck_name] = truck.return_truck_results()
+
+        return results
     # def clear_step_finish(self):
     #     for element in self.element_list:
     #         element.step_finish = False

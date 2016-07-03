@@ -1,4 +1,4 @@
-from src.iteration_resutls import IterationResults
+from src.iteration_results import IterationResults
 
 
 class SolutionResults(object):
