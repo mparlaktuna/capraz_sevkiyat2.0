@@ -10,7 +10,7 @@ from src.solver import Solver
 from models.data_set_model import DataSetModel
 from models.good_table_model import GoodTableModel
 from models.time_table_model import TimeTableModel
-
+from src.sequence_solver import SequenceSolver
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -19,7 +19,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.data = DataStore()
         self.solver_data = SolverData()
-        self.solver = Solver(self.graphicsView, self.data, self.solver_data)
+        self.solver = Solver(self.data, self.solver_data)
         self.update_data_table()
         self.setup_data()
         self.value_connections()
@@ -28,13 +28,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.combobox_coming_sequence = []
         self.combobox_going_sequence = []
         self.statusBar().showMessage('Ready')
-        self.graphicsView.data = self.data
-        self.graphicsView.parent = self
         self.load_generated_data()
 
         self.showing_result = []
         self.result_times = {}
-        self.function_type = 'normal'
+        self.function_type = "normal"
+        self.solution_name = ""
+        self.solution_number = 0
+        self.sequence_solver = SequenceSolver()
+        self.solution_results = dict()
+
 
     def setup_data(self):
         self.data_set_model = DataSetModel(self.data)
@@ -72,21 +75,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.number_of_tabu_line_edit.textChanged.connect(self.set_tabu_number_tabu)
         self.data_set_spin_box.valueChanged.connect(self.set_data_set_number)
 
-    def solve_data_set(self):
-        self.solver.solve_data_set()
-
-    def solve_simulator(self):
-        self.solver.simulator.data = self.data
-        self.solver.solve_simluation()
-
-    def step_simulator(self):
-        self.solver.simulation_step()
+    def set_solver_algorithm(self, value):
+        if value:
+            self.solver_data.algorithm_name = str(value)
 
     def set_data_set_number(self, value):
-        self.solver_data.data_set_number = value - 1
-
-    def set_solver_algorithm(self, value):
-        self.solver_data.algorithm_name = value
+        if value:
+            self.solver_data.data_set_number = int(value)
 
     def set_annealing_temperature(self, value):
         if value:
@@ -133,7 +128,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.compound_going_table_model.truck_number(value)
         self.data.number_of_compound_trucks = value
         self.data.update_truck_numbers()
-        #self.setup_sequence_solver()
 
     def set_receiving_door_number(self, value):
         self.data.set_receiving_door_number(value)
@@ -184,24 +178,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.print_gams.clicked.connect(self.gams_output)
 
-        #self.stop_data_set_solve_button.clicked.connect(self.stop)
-
-        self.solve_data_set_button.clicked.connect(self.solve_data_set)
-        self.solve_one_sequence_button.clicked.connect(self.solve_simulator)
-
         self.actionNew_Data.triggered.connect(self.new_data)
         self.actionSave_Data.triggered.connect(self.save_data)
         self.actionLoad_Data.triggered.connect(self.load_data)
 
-        #self.pause_button.clicked.connect(self.pause)
-        self.resume_button.clicked.connect(self.step_simulator)
-
         self.generate_times_button.clicked.connect(self.generate_times)
         self.generate_new_boundaries_button.clicked.connect(self.new_generate_times)
-        #self.stop_button.clicked.connect(self.finished)
+        self.solve_data_set_button.clicked.connect(self.solve_data_set)
+        self.solve_one_sequence_button.clicked.connect(self.solve_one_sequence)
 
-        self.result_names_combo_box.currentTextChanged.connect(self.change_result_name)
-        #self.show_results_button.clicked.connect(self.show_results)
+    def solve_data_set(self):
+        pass
+        #solve depending on algorithms
+
+    def solve_one_sequence(self):
+        self.solution_name = "simulation_" + self.solver_data.funtion_type + "_" + str(self.solution_number)
+        self.sequence_solver.set_data(self.solver_data, self.data)
+
+        #get sequence
+
 
     def load_data(self):
         """
@@ -237,10 +232,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         file_name, _ = QFileDialog.getSaveFileName(self, 'Save file', '/home')
 
         gams_writer(file_name, self.data_set_spin_box.value() - 1, self.data)
-
-    def change_result_name(self, name):
-        self.solution_name = name
-        self.showing_result = self.results[name]
 
     def new_data(self):
         self.data = DataStore()

@@ -8,11 +8,10 @@ from src.annealing import Annealing
 
 class Solver(QObject):
 
-    def __init__(self, simulator, data=DataStore(), solver_data=SolverData()):
+    def __init__(self,  data=DataStore(), solver_data=SolverData()):
         QObject.__init__(self)
         self.data = data
         self.solver_data = solver_data
-        self.simulator = simulator
         self.annealing = Annealing(self.data)
         self.current_iteration = 0
 
