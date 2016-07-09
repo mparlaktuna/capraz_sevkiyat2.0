@@ -12,6 +12,7 @@ from models.good_table_model import GoodTableModel
 from models.time_table_model import TimeTableModel
 from src.sequence_solver import SequenceSolver
 from src.enter_sequence import EnterSequenceWidget
+from src.sequence import Sequence
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -39,6 +40,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sequence_solver = SequenceSolver()
         self.solution_results = dict()
         self.enter_sequence_widget = EnterSequenceWidget(self.data)
+        self.current_sequence = Sequence()
 
 
     def setup_data(self):
@@ -197,6 +199,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def solve_one_sequence(self):
         self.solution_name = "simulation_" + self.solver_data.funtion_type + "_" + str(self.solution_number)
         self.sequence_solver.set_data(self.solver_data, self.data)
+        self.current_sequence.print_sequence()
+        self.sequence_solver.set_sequence(self.current_sequence)
+        print(self.sequence_solver.model.time_list)
         #get sequence
 
 
@@ -231,7 +236,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
     def enter_sequence(self):
-        self.enter_sequence_widget = EnterSequenceWidget(self.data)
+        self.current_sequence = Sequence(self.data)
+        self.enter_sequence_widget = EnterSequenceWidget(self.data, self.current_sequence)
         self.enter_sequence_widget.show()
 
     def gams_output(self):

@@ -9,7 +9,9 @@ class Sequence():
         self.coming_sequence_element = SequenceElement('receiving', self.data.number_of_receiving_doors)
         self.going_sequence_element = SequenceElement('shipping', self.data.number_of_shipping_doors)
 
-    def set_sequences(self):
+    def set_sequences(self, coming_sequence=[], going_sequence=[]):
+        self.coming_sequence = coming_sequence
+        self.going_sequence = going_sequence
         self.coming_sequence_element.set_doors(self.data.number_of_receiving_doors)
         self.going_sequence_element.set_doors(self.data.number_of_shipping_doors)
         coming_index = []

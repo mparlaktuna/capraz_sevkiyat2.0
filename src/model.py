@@ -7,7 +7,7 @@ from src.outbound_truck import OutboundTruck
 from src.compound_truck import CompoundTruck
 from src.receiving_doors import ReceivingDoor
 from src.shipping_door import ShippingDoor
-from src.sequnce import Sequence
+from src.sequence import Sequence
 from src.solver_data import SolverData
 from src.iteration_results import IterationResults
 
@@ -66,19 +66,19 @@ class Model(QThread):
 
         for i in range(self.data.number_of_receiving_doors):
             name = 'receiving' + str(i)
-            door = ReceivingDoor()
+            door = ReceivingDoor(name)
             self.receiving_doors[name] = door
             # door.station = self.station
-            # self.all_doors[name] = door
-            # self.element_list.append(door)
+            self.all_doors[name] = door
+            self.element_list.append(door)
 
         for i in range(self.data.number_of_shipping_doors):
             name = 'shipping' + str(i)
-            door = ShippingDoor()
+            door = ShippingDoor(name)
             self.shipping_doors[name] = door
             # door.station = self.station
-            # self.element_list.append(door)
-            # self.all_doors[name] = door
+            self.element_list.append(door)
+            self.all_doors[name] = door
 
         for truck in self.all_trucks.values():
             self.element_list.append(truck)
@@ -89,30 +89,33 @@ class Model(QThread):
 
     def set_sequence(self, sequence):
         self.current_sequence = sequence
-        for truck in self.inbound_trucks.values():
-            coming_door_name = self.current_sequence.coming_sequence_element.get_door_name(truck.element_name)
-            truck.first_door = self.all_doors[coming_door_name]
-            truck.current_door = truck.first_door
-            truck.second_door = truck.first_door
+        try:
+            for truck in self.inbound_trucks.values():
+                coming_door_name = self.current_sequence.coming_sequence_element.get_door_name(truck.element_name)
+                truck.first_door = self.all_doors[coming_door_name]
+                truck.current_door = truck.first_door
+                truck.second_door = truck.first_door
 
-        for truck in self.outbound_trucks.values():
-            going_door_name = self.current_sequence.going_sequence_element.get_door_name(truck.element_name)
-            truck.second_door = self.all_doors[going_door_name]
-            truck.current_door = truck.second_door
-            truck.first_door = truck.second_door
+            for truck in self.outbound_trucks.values():
+                going_door_name = self.current_sequence.going_sequence_element.get_door_name(truck.element_name)
+                truck.second_door = self.all_doors[going_door_name]
+                truck.current_door = truck.second_door
+                truck.first_door = truck.second_door
 
-        for truck in self.compound_trucks.values():
-            coming_door_name = self.current_sequence.coming_sequence_element.get_door_name(truck.element_name)
-            going_door_name = self.current_sequence.going_sequence_element.get_door_name(truck.element_name)
-            truck.first_door = self.all_doors[coming_door_name]
-            truck.second_door = self.all_doors[going_door_name]
-            truck.current_door = truck.first_door
+            for truck in self.compound_trucks.values():
+                coming_door_name = self.current_sequence.coming_sequence_element.get_door_name(truck.element_name)
+                going_door_name = self.current_sequence.going_sequence_element.get_door_name(truck.element_name)
+                truck.first_door = self.all_doors[coming_door_name]
+                truck.second_door = self.all_doors[going_door_name]
+                truck.current_door = truck.first_door
 
-        for door in self.receiving_doors.values():
-            door.truck_list = self.current_sequence.coming_sequence_element.sequence_dict[door.element_name]
+            for door in self.receiving_doors.values():
+                door.truck_list = self.current_sequence.coming_sequence_element.sequence_dict[door.element_name]
 
-        for door in self.shipping_doors.values():
-            door.truck_list = self.current_sequence.going_sequence_element.sequence_dict[door.element_name]
+            for door in self.shipping_doors.values():
+                door.truck_list = self.current_sequence.going_sequence_element.sequence_dict[door.element_name]
+        except:
+            print("yanlis sira girilmis")
 
     def set_coming_times(self):
         for truck in self.all_trucks.values():
@@ -121,6 +124,7 @@ class Model(QThread):
             truck.good_loading_time = self.data.loading_time
             truck.good_unloading_time = self.data.unloading_time
             truck.good_transfer_time = self.data.good_transfer_time
+            self.add_time(truck.coming_time)
             truck.station = self.station
 
     def set_goods(self):
@@ -183,7 +187,7 @@ class Model(QThread):
 
     def generate_results(self, results=IterationResults()):
         for truck in self.all_trucks:
-            results.truck_results[truck.truck_name] = truck.return_truck_results()
+            results.truck_results[truck.element_name] = truck.return_truck_results()
 
         return results
     # def clear_step_finish(self):

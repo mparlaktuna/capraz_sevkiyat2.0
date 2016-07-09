@@ -2,7 +2,7 @@ from PyQt5.QtCore import *
 from src.data_store import DataStore
 from src.solver_data import SolverData
 from src.model import Model
-from src.sequnce import Sequence
+from src.sequence import Sequence
 from src.annealing import Annealing
 
 

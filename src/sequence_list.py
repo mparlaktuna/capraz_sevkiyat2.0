@@ -1,7 +1,9 @@
-from src.sequnce import Sequence
+from src.sequence import Sequence
 
 
 class SequenceList():
+    # list of sequences
+
     def __init__(self):
         self.sequence_list = []
         self.best_sequence = Sequence()
