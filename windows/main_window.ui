@@ -608,33 +608,6 @@
         <string>View The Solution</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5" rowstretch="0,0">
-        <item row="1" column="0">
-         <widget class="QFrame" name="frame">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <item row="0" column="3">
-            <layout class="QVBoxLayout" name="simulationShippingDoorsList"/>
-           </item>
-           <item row="0" column="2">
-            <layout class="QVBoxLayout" name="simulationStation"/>
-           </item>
-           <item row="0" column="1">
-            <layout class="QVBoxLayout" name="simulationReceivingDoorsList"/>
-           </item>
-           <item row="0" column="4">
-            <layout class="QVBoxLayout" name="simulationFinishedList"/>
-           </item>
-           <item row="0" column="0">
-            <layout class="QVBoxLayout" name="simulationComingTruckList"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
@@ -691,6 +664,21 @@
            </widget>
           </item>
          </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QFrame" name="simulationFrame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="simulationGrid"/>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
