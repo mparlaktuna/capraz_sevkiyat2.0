@@ -617,21 +617,26 @@
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="3">
+            <layout class="QVBoxLayout" name="simulationShippingDoorsList"/>
+           </item>
+           <item row="0" column="2">
+            <layout class="QVBoxLayout" name="simulationStation"/>
+           </item>
+           <item row="0" column="1">
+            <layout class="QVBoxLayout" name="simulationReceivingDoorsList"/>
+           </item>
+           <item row="0" column="4">
+            <layout class="QVBoxLayout" name="simulationFinishedList"/>
+           </item>
            <item row="0" column="0">
-            <widget class="QListWidget" name="listWidget"/>
+            <layout class="QVBoxLayout" name="simulationComingTruckList"/>
            </item>
           </layout>
          </widget>
         </item>
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QPushButton" name="solve_one_sequence_button">
-            <property name="text">
-             <string>Run</string>
-            </property>
-           </widget>
-          </item>
           <item>
            <widget class="QPushButton" name="enter_sequence_button">
             <property name="text">
@@ -672,23 +677,16 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pause_button">
+           <widget class="QPushButton" name="simulationStartButton">
             <property name="text">
-             <string>Pause</string>
+             <string>Start</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="resume_button">
+           <widget class="QPushButton" name="simulationStepForwardButton">
             <property name="text">
-             <string>Resume</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="stop_button">
-            <property name="text">
-             <string>Stop</string>
+             <string>Step Forward</string>
             </property>
            </widget>
           </item>
