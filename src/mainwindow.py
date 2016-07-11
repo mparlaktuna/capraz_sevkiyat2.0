@@ -12,6 +12,8 @@ from models.good_table_model import GoodTableModel
 from models.time_table_model import TimeTableModel
 from src.sequence_solver import SequenceSolver
 from src.enter_sequence import EnterSequenceWidget
+from src.sequence import Sequence
+from windows.simulation_truck import Ui_simulation_truck
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -39,6 +41,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.sequence_solver = SequenceSolver()
         self.solution_results = dict()
         self.enter_sequence_widget = EnterSequenceWidget(self.data)
+        self.current_sequence = Sequence()
 
 
     def setup_data(self):
@@ -187,18 +190,92 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.generate_times_button.clicked.connect(self.generate_times)
         self.generate_new_boundaries_button.clicked.connect(self.new_generate_times)
         self.solve_data_set_button.clicked.connect(self.solve_data_set)
-        self.solve_one_sequence_button.clicked.connect(self.solve_one_sequence)
+        self.simulationStartButton.clicked.connect(self.simulation_start)
         self.enter_sequence_button.clicked.connect(self.enter_sequence)
+        self.simulationStepForwardButton.clicked.connect(self.simulation_forward)
 
     def solve_data_set(self):
         pass
         #solve depending on algorithms
 
-    def solve_one_sequence(self):
+    def simulation_start(self):
         self.solution_name = "simulation_" + self.solver_data.funtion_type + "_" + str(self.solution_number)
         self.sequence_solver.set_data(self.solver_data, self.data)
+        self.current_sequence.print_sequence()
+        self.sequence_solver.set_sequence(self.current_sequence)
+        print(self.sequence_solver.model.time_list)
+        self.simulation_set_tables()
+        self.simulation_set_trucks()
+        self.simulation_add_spacers()
+        # self.new_truck_widget = QWidget()
+        # self.new_truck_element = Ui_simulation_truck()
+        # self.new_truck_element.setupUi(self.new_truck_widget)
+        # self.new_truck_element.currentStateLabel.setText("deneme")
+        # self.simulationComingTruckList.addWidget(self.new_truck_widget)
         #get sequence
 
+    def simulation_set_tables(self):
+        self.simulation_clear_layouts()
+        self.simulationComingTruckList = QVBoxLayout()
+        self.simulationReceivingDoorsList = QVBoxLayout()
+        self.simulationStation = QVBoxLayout()
+        self.simulationCompoundTruckTransferList = QVBoxLayout()
+        self.simulationShippingDoorsList = QVBoxLayout()
+        self.simulationFinishedList = QVBoxLayout()
+        self.simulation_table_list = [self.simulationComingTruckList, self.simulationReceivingDoorsList, self.simulationCompoundTruckTransferList, self.simulationStation, self.simulationShippingDoorsList, self.simulationFinishedList]
+
+        self.simulationGrid.addLayout(self.simulationComingTruckList, 0, 0, 2, 1)
+        self.simulationGrid.addLayout(self.simulationReceivingDoorsList, 0, 1, 2, 1)
+        self.simulationGrid.addLayout(self.simulationCompoundTruckTransferList, 0, 2, 1, 1)
+        self.simulationGrid.addLayout(self.simulationStation, 1, 2, 1, 1)
+        self.simulationGrid.addLayout(self.simulationShippingDoorsList, 0, 3, 2, 1)
+        self.simulationGrid.addLayout(self.simulationFinishedList, 0, 4, 2, 1)
+        title_labels = ["Coming Trucks", "Receiving Doors", "Compound Trucks Transfer List", "Station", "Shipping Doors", "Finished"]
+
+        for i, table_list in enumerate(self.simulation_table_list):
+            title = QLabel()
+            title.setText(title_labels[i])
+            table_list.addWidget(title)
+
+    def clear_layout(self, layout):
+        for i in reversed(range(layout.count())):
+            item = layout.itemAt(i)
+
+            if isinstance(item, QWidgetItem):
+
+                item.widget().close()
+
+            elif isinstance(item, QSpacerItem):
+                pass
+            else:
+                self.clearLayout(item.layout())
+
+            # remove the item from layout
+            layout.removeItem(item)
+
+    def simulation_clear_layouts(self):
+        try:
+            for table_list in self.simulation_table_list:
+                self.clear_layout(table_list)
+        except:
+            print("not cleared")
+            pass
+
+    def simulation_add_spacers(self):
+        for table_list in self.simulation_table_list:
+            spacer = QSpacerItem(20,40,QSizePolicy.Minimum,QSizePolicy.Expanding)
+            table_list.insertSpacerItem(table_list.count(), spacer)
+
+    def simulation_set_trucks(self):
+        for truck in self.sequence_solver.model.all_trucks.values():
+            new_truck_widget = QWidget()
+            new_truck_element = Ui_simulation_truck()
+            new_truck_element.setupUi(new_truck_widget)
+            new_truck_element.truckNameLabel.setText(truck.element_name)
+            self.simulationComingTruckList.addWidget(new_truck_widget)
+
+    def simulation_forward(self):
+        pass
 
     def load_data(self):
         """
@@ -231,7 +308,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
     def enter_sequence(self):
-        self.enter_sequence_widget = EnterSequenceWidget(self.data)
+        self.current_sequence = Sequence(self.data)
+        self.enter_sequence_widget = EnterSequenceWidget(self.data, self.current_sequence)
         self.enter_sequence_widget.show()
 
     def gams_output(self):

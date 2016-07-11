@@ -3,7 +3,7 @@ from src.model import Model
 from src.data_store import DataStore
 from src.solver import SolverData
 from src.solution_results import SolutionResults
-
+from src.sequence import Sequence
 
 class GeneralSolver(object):
 
@@ -15,6 +15,7 @@ class GeneralSolver(object):
         self.data = DataStore()
         self.results = SolutionResults()
         #self.sequence_list = SequenceList()
+        self.current_sequence = Sequence()
 
     def new_model(self):
         self.model = Model()
@@ -25,8 +26,9 @@ class GeneralSolver(object):
         self.data = data
         self.model.set_data(solver_data, data)
 
-    def set_sequence(self):
-        pass
+    def set_sequence(self, sequence=Sequence()):
+        self.current_sequence = sequence
+        self.model.set_sequence(self.current_sequence)
     # gets a sequence and sets model
 
     def solve_iteration(self):

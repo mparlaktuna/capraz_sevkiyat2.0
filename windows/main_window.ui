@@ -608,30 +608,8 @@
         <string>View The Solution</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5" rowstretch="0,0">
-        <item row="1" column="0">
-         <widget class="QFrame" name="frame">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <item row="0" column="0">
-            <widget class="QListWidget" name="listWidget"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QPushButton" name="solve_one_sequence_button">
-            <property name="text">
-             <string>Run</string>
-            </property>
-           </widget>
-          </item>
           <item>
            <widget class="QPushButton" name="enter_sequence_button">
             <property name="text">
@@ -672,27 +650,35 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pause_button">
+           <widget class="QPushButton" name="simulationStartButton">
             <property name="text">
-             <string>Pause</string>
+             <string>Start</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="resume_button">
+           <widget class="QPushButton" name="simulationStepForwardButton">
             <property name="text">
-             <string>Resume</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="stop_button">
-            <property name="text">
-             <string>Stop</string>
+             <string>Step Forward</string>
             </property>
            </widget>
           </item>
          </layout>
+        </item>
+        <item row="1" column="0">
+         <widget class="QFrame" name="simulationFrame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="simulationGrid"/>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>

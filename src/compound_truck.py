@@ -11,8 +11,8 @@ class CompoundTruck(Truck):
         #self.state_functions['changeover_mid'] = self.changeover
         #self.state_functions['truck_transfer'] = self.truck_transfer
         self.truck_transfer = 0
-
-    def truck_transfer(self):
-        if self.check_next_time():
-            self.next_state_time = self.current_time + 1
-            self.state += 1
+    #
+    # def truck_transfer(self):
+    #     if self.check_next_time():
+    #         self.next_state_time = self.current_time + 1
+    #         self.state += 1

@@ -1,6 +1,6 @@
 from src.data_store import DataStore
 from src.sequence_list import SequenceList
-from src.sequnce import Sequence
+from src.sequence import Sequence
 from math import ceil
 import operator
 import random

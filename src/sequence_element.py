@@ -1,4 +1,7 @@
+
+
 class SequenceElement():
+
     def __init__(self, type, number):
         self.sequence_dict = {}
         self.type = type
@@ -10,6 +13,7 @@ class SequenceElement():
             self.sequence_dict[t] = []
 
     def add_sequence_list(self, door_name, sequence_list):
+        #creates a sequence list for a door
         self.sequence_dict[door_name] = sequence_list
 
     def get_door_name(self, truck_name):
