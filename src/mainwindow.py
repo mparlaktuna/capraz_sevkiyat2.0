@@ -42,6 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.solution_results = dict()
         self.enter_sequence_widget = EnterSequenceWidget(self.data)
         self.current_sequence = Sequence()
+        self.load_data()
 
 
     def setup_data(self):
@@ -199,20 +200,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #solve depending on algorithms
 
     def simulation_start(self):
-        self.solution_name = "simulation_" + self.solver_data.funtion_type + "_" + str(self.solution_number)
+        pass
+        self.solution_name = "simulation_" + self.solver_data.function_type + "_" + str(self.solution_number)
         self.sequence_solver.set_data(self.solver_data, self.data)
         self.current_sequence.print_sequence()
         self.sequence_solver.set_sequence(self.current_sequence)
-        print(self.sequence_solver.model.time_list)
         self.simulation_set_tables()
         self.simulation_set_trucks()
         self.simulation_add_spacers()
-        # self.new_truck_widget = QWidget()
-        # self.new_truck_element = Ui_simulation_truck()
-        # self.new_truck_element.setupUi(self.new_truck_widget)
-        # self.new_truck_element.currentStateLabel.setText("deneme")
-        # self.simulationComingTruckList.addWidget(self.new_truck_widget)
-        #get sequence
+        print(self.sequence_solver.model.time_list)
+
+    def simulation_forward(self):
+        print("Simulation Forward")
+        self.sequence_solver.step_forward()
+        
 
     def simulation_set_tables(self):
         self.simulation_clear_layouts()
@@ -272,17 +273,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             new_truck_element = Ui_simulation_truck()
             new_truck_element.setupUi(new_truck_widget)
             new_truck_element.truckNameLabel.setText(truck.element_name)
+            new_truck_element.show_goods_button.clicked.connect(truck.show_goods)
+            new_truck_element.show_times_button.clicked.connect(truck.show_times)
             self.simulationComingTruckList.addWidget(new_truck_widget)
-
-    def simulation_forward(self):
-        pass
 
     def load_data(self):
         """
         loads prev saved data
         :return:
         """
-        file_name, _ = QFileDialog.getOpenFileName(self, 'Open file', '/home')
+        # for fast loading data disable after finished and uncomment following
+        file_name = "/home/mustafa/Downloads/test202"
+        # file_name, _ = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         try:
             self.data = pickle.load(open(file_name, 'rb'))
         except Exception as e:

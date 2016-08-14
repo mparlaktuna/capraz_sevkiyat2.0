@@ -115,11 +115,12 @@ class Model(QThread):
             for door in self.shipping_doors.values():
                 door.truck_list = self.current_sequence.going_sequence_element.sequence_dict[door.element_name]
         except:
-            print("yanlis sira girilmis")
+            print("Girilen Sirada Hata Mevcut")
 
     def set_coming_times(self):
         for truck in self.all_trucks.values():
             truck.coming_time = self.data.arrival_times[self.data_set_number][truck.element_name]
+            truck.times["coming_time"] = truck.coming_time
             truck.changeover_time = self.data.changeover_time
             truck.good_loading_time = self.data.loading_time
             truck.good_unloading_time = self.data.unloading_time
@@ -162,7 +163,9 @@ class Model(QThread):
             else:
                 finished = False
                 break
+
         self.done = finished
+        return finished
 
     def add_time(self, new_time):
         if new_time not in self.time_list:
@@ -174,8 +177,6 @@ class Model(QThread):
         if not self.time_list:
             self.time_list.append(next_time + 1)
         print(next_time)
-        print(self.time_list)
-        self.next_time_signal.emit(next_time)
 
     def run(self):
         #add timer

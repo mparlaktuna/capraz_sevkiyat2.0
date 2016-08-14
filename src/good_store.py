@@ -1,9 +1,10 @@
 from src.good_list import GoodList
+from collections import OrderedDict
 
 
 class GoodStore():
     def __init__(self):
-        self.good_dictionary = {}
+        self.good_dictionary = OrderedDict()
         self.good_amounts = {}
 
     def add_good_type(self, good_name):
