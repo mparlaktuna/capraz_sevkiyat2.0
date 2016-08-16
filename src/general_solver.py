@@ -39,5 +39,12 @@ class GeneralSolver(object):
         self.model.reset_model()
 
         pass
-    # start model solve
+        # start model solve
 
+    def step_forward(self):
+        """
+        moves the model forward
+        """
+        self.model.next_time()
+        print("Times: ", self.model.time_list)
+        print("Finished: ", self.model.check_done())

@@ -5,11 +5,8 @@ class CompoundTruck(Truck):
     def __init__(self, name):
         Truck.__init__(self)
         self.element_name = name
-        #self.state_list = ['coming', 'done']
-
         self.state_list = ['coming', 'waiting_to_deploy', 'changeover_deploy', 'deploying', 'changeover_mid', 'truck_transfer', 'waiting_to_load', 'changeover_load',  'not_enough_goods', 'loading', 'changeover_fin', 'done']
-        #self.state_functions['changeover_mid'] = self.changeover
-        #self.state_functions['truck_transfer'] = self.truck_transfer
+        self.state_functions['coming'] = self.coming
         self.truck_transfer = 0
     #
     # def truck_transfer(self):

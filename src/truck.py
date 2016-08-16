@@ -9,9 +9,9 @@ class Truck():
     def __init__(self):
         self.element_name = ""
         self.truck_type = ""
-        self.truck_times = dict()
+        self.truck_times = OrderedDict()
+        self.state_functions = OrderedDict()
         self.truck_states = []
-        self.times = OrderedDict()
         self.coming_time = 0
         self.changeover_time = 0
         self.good_loading_time = 0
@@ -27,6 +27,8 @@ class Truck():
         self.truck_results = TruckResults()
         self.first_door = ""
         self.second_door = ""
+        self.next_state_time = 0
+        
 
     def add_good_types(self, number_of_goods):
         for i in range(number_of_goods):
@@ -62,7 +64,7 @@ class Truck():
         good_dialog = QMessageBox()
         good_dialog.setWindowTitle("Times of " + self.element_name)
         message = ""
-        for state_name, state_time in self.times.items():
+        for state_name, state_time in self.truck_times.items():
             message += state_name 
             message += ": "
             message += str(state_time)
@@ -82,3 +84,28 @@ class Truck():
         self.truck_results.coming_goods = self.coming_good_store
         self.truck_results.going_goods = self.going_good_store
         return self.truck_results
+
+    def step(self):
+        """
+        one tep forward
+        """
+        print("step:", self.element_name, self.state)
+        state_name = self.state_list[self.state]
+        
+        self.state_functions[state_name]()
+
+    def check_next_state_time (self):
+        """check next if time for next state has come"""
+
+        if self.current_time == self.next_state_time:
+            return True
+        else:
+            return False
+            
+    def coming (self):
+        """truck coming"""
+        if self.check_next_state_time():
+            print("truck has come")
+        else:
+            print("truck is coming")
+        

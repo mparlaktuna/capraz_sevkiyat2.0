@@ -120,7 +120,8 @@ class Model(QThread):
     def set_coming_times(self):
         for truck in self.all_trucks.values():
             truck.coming_time = self.data.arrival_times[self.data_set_number][truck.element_name]
-            truck.times["coming_time"] = truck.coming_time
+            truck.next_state_time = truck.coming_time
+            truck.truck_times["coming_time"] = truck.coming_time
             truck.changeover_time = self.data.changeover_time
             truck.good_loading_time = self.data.loading_time
             truck.good_unloading_time = self.data.unloading_time
@@ -156,6 +157,9 @@ class Model(QThread):
         self.set_goods()
 
     def check_done(self):
+        """
+        check if all the trucks are finished
+        """
         finished = True
         for truck in self.all_trucks.values():
             if truck.state_list[truck.state] == 'done':
@@ -173,10 +177,24 @@ class Model(QThread):
             self.time_list.sort()
 
     def next_time(self):
-        next_time = self.time_list.pop(0)
-        if not self.time_list:
-            self.time_list.append(next_time + 1)
-        print(next_time)
+        self.current_time = self.time_list.pop(0)
+        #run trucks doors and station
+        if not self.check_done():
+            self.update_elements()
+            if not self.time_list:
+                self.time_list.append(self.current_time + 1)
+            print(self.current_time)
+        else:
+            print("Finished")
+
+    def update_elements(self):
+        """
+        updates every element (truck, door and station)
+        """
+        print("update elements")
+        for truck in self.all_trucks.values():
+            truck.current_time = self.current_time
+            truck.step()
 
     def run(self):
         #add timer
@@ -191,23 +209,3 @@ class Model(QThread):
             results.truck_results[truck.element_name] = truck.return_truck_results()
 
         return results
-    # def clear_step_finish(self):
-    #     for element in self.element_list:
-    #         element.step_finish = False
-    #
-    # def set_step_finish(self):
-    #     for element in self.element_list:
-    #         element.step_finish = True
-    #
-    # def check_step_finish(self):
-    #     step_finish = False
-    #     for element in self.element_list:
-    #         if element.step_finish:
-    #             step_finish = True
-    #         else:
-    #             return False
-    #     return step_finish
-    #
-    # def solve(self):
-    #     self.set_step_finish()
-    #     self.start()

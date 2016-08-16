@@ -44,6 +44,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.current_sequence = Sequence()
         self.load_data()
 
+        self.simulationStartButton.setEnabled(False)
+        self.simulationStepForwardButton.setEnabled(False)
+
 
     def setup_data(self):
         self.data_set_model = DataSetModel(self.data)
@@ -200,7 +203,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #solve depending on algorithms
 
     def simulation_start(self):
-        pass
+        """
+        start a simulation for one solution
+        """
         self.solution_name = "simulation_" + self.solver_data.function_type + "_" + str(self.solution_number)
         self.sequence_solver.set_data(self.solver_data, self.data)
         self.current_sequence.print_sequence()
@@ -208,6 +213,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.simulation_set_tables()
         self.simulation_set_trucks()
         self.simulation_add_spacers()
+        self.simulationStartButton.setEnabled(False)
+        self.simulationStepForwardButton.setEnabled(True)
         print(self.sequence_solver.model.time_list)
 
     def simulation_forward(self):
@@ -313,6 +320,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.current_sequence = Sequence(self.data)
         self.enter_sequence_widget = EnterSequenceWidget(self.data, self.current_sequence)
         self.enter_sequence_widget.show()
+        self.simulationStartButton.setEnabled(True)
+
+
+
 
     def gams_output(self):
         file_name, _ = QFileDialog.getSaveFileName(self, 'Save file', '/home')
