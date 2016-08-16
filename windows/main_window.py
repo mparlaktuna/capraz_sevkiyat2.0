@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\main_window.ui'
+# Form implementation generated from reading ui file 'main_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.6
 #
@@ -344,18 +344,14 @@ class Ui_MainWindow(object):
         self.time.setFont(font)
         self.time.setObjectName("time")
         self.horizontalLayout_2.addWidget(self.time)
-        self.label_12 = QtWidgets.QLabel(self.tab_4)
-        self.label_12.setObjectName("label_12")
-        self.horizontalLayout_2.addWidget(self.label_12)
-        self.time_constant = QtWidgets.QLineEdit(self.tab_4)
-        self.time_constant.setObjectName("time_constant")
-        self.horizontalLayout_2.addWidget(self.time_constant)
         self.simulationStartButton = QtWidgets.QPushButton(self.tab_4)
         self.simulationStartButton.setObjectName("simulationStartButton")
         self.horizontalLayout_2.addWidget(self.simulationStartButton)
         self.simulationStepForwardButton = QtWidgets.QPushButton(self.tab_4)
         self.simulationStepForwardButton.setObjectName("simulationStepForwardButton")
         self.horizontalLayout_2.addWidget(self.simulationStepForwardButton)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem1)
         self.gridLayout_5.addLayout(self.horizontalLayout_2, 0, 0, 1, 1)
         self.simulationFrame = QtWidgets.QFrame(self.tab_4)
         self.simulationFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -470,7 +466,7 @@ class Ui_MainWindow(object):
         self.gridLayout_9.addWidget(self.enterSequenceButton, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1274, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1274, 22))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -551,8 +547,6 @@ class Ui_MainWindow(object):
         self.enterSequenceButton.setTabText(self.enterSequenceButton.indexOf(self.tab_2), _translate("MainWindow", "Solve Data Set"))
         self.enter_sequence_button.setText(_translate("MainWindow", "Enter Sequence"))
         self.label_8.setText(_translate("MainWindow", "Time"))
-        self.label_12.setText(_translate("MainWindow", "One step time"))
-        self.time_constant.setText(_translate("MainWindow", "0.1"))
         self.simulationStartButton.setText(_translate("MainWindow", "Start"))
         self.simulationStepForwardButton.setText(_translate("MainWindow", "Step Forward"))
         self.enterSequenceButton.setTabText(self.enterSequenceButton.indexOf(self.tab_4), _translate("MainWindow", "View The Solution"))

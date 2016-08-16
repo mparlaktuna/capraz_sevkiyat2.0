@@ -636,20 +636,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>One step time</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="time_constant">
-            <property name="text">
-             <string>0.1</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="simulationStartButton">
             <property name="text">
              <string>Start</string>
@@ -662,6 +648,19 @@
              <string>Step Forward</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -896,7 +895,7 @@
      <x>0</x>
      <y>0</y>
      <width>1274</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

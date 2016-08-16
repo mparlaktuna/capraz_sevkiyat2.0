@@ -194,7 +194,9 @@ class Model(QThread):
         print("update elements")
         for truck in self.all_trucks.values():
             truck.current_time = self.current_time
-            truck.step()
+            result = truck.step()
+            if (result and (not result == -1)):
+                self.add_time(result)
 
     def run(self):
         #add timer

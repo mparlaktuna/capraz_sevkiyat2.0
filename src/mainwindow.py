@@ -14,6 +14,7 @@ from src.sequence_solver import SequenceSolver
 from src.enter_sequence import EnterSequenceWidget
 from src.sequence import Sequence
 from windows.simulation_truck import Ui_simulation_truck
+from windows.simulation_door import Ui_simulation_door
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -220,6 +221,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def simulation_forward(self):
         print("Simulation Forward")
         self.sequence_solver.step_forward()
+        self.simulation_clear_layouts()
+        self.simulation_set_tables()
+        self.simulation_set_trucks()
+        self.simulation_add_spacers()
+        self.time.display(self.sequence_solver.model.current_time)
         
 
     def simulation_set_tables(self):
@@ -233,10 +239,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.simulation_table_list = [self.simulationComingTruckList, self.simulationReceivingDoorsList, self.simulationCompoundTruckTransferList, self.simulationStation, self.simulationShippingDoorsList, self.simulationFinishedList]
 
         self.simulationGrid.addLayout(self.simulationComingTruckList, 0, 0, 2, 1)
+
         self.simulationGrid.addLayout(self.simulationReceivingDoorsList, 0, 1, 2, 1)
+        
         self.simulationGrid.addLayout(self.simulationCompoundTruckTransferList, 0, 2, 1, 1)
+
         self.simulationGrid.addLayout(self.simulationStation, 1, 2, 1, 1)
+
+
         self.simulationGrid.addLayout(self.simulationShippingDoorsList, 0, 3, 2, 1)
+        
         self.simulationGrid.addLayout(self.simulationFinishedList, 0, 4, 2, 1)
         title_labels = ["Coming Trucks", "Receiving Doors", "Compound Trucks Transfer List", "Station", "Shipping Doors", "Finished"]
 
@@ -275,14 +287,69 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             table_list.insertSpacerItem(table_list.count(), spacer)
 
     def simulation_set_trucks(self):
+        coming_truck_list = []
+        receiving_truck_list = []
+        shipping_truck_list = []
+        transfer_truck_list = []
+        done_truck_list = []
+        truck_widget_dict = dict()
         for truck in self.sequence_solver.model.all_trucks.values():
             new_truck_widget = QWidget()
             new_truck_element = Ui_simulation_truck()
             new_truck_element.setupUi(new_truck_widget)
-            new_truck_element.truckNameLabel.setText(truck.element_name)
+            if truck.state_change:
+                new_truck_element.truckNameLabel.setText(truck.element_name+"*")
+            else:
+                new_truck_element.truckNameLabel.setText(truck.element_name)
             new_truck_element.show_goods_button.clicked.connect(truck.show_goods)
             new_truck_element.show_times_button.clicked.connect(truck.show_times)
-            self.simulationComingTruckList.addWidget(new_truck_widget)
+            truck_widget_dict[truck.element_name] = new_truck_widget
+            if truck.simulation_state == 0:
+                # coming truck list
+                coming_truck_list.append(truck)
+            elif truck.simulation_state == 1:
+                # receiving door"
+                receiving_truck_list.append(truck)
+                if truck.state == 1:
+                    new_truck_element.truckNameLabel.setText(truck.element_name+"-w")
+                elif truck.state == 2:
+                    new_truck_element.truckNameLabel.setText(truck.element_name+"-cin")
+                elif truck.state == 3:
+                    new_truck_element.truckNameLabel.setText(truck.element_name+"-de")
+                elif truck.state == 4:
+                    new_truck_element.truckNameLabel.setText(truck.element_name+"-cout")
+
+            elif truck.simulation_state == 2:
+                # shipping door
+                shipping_truck_list.append(truck)
+            elif truck.simulation_state == 3:
+                # done
+                done_truck_list.append(truck)
+            elif truck.simulation_state == 4:
+                # transfer
+                transfer_truck_list.append(truck)
+        for truck in coming_truck_list:
+            self.simulationComingTruckList.addWidget(truck_widget_dict[truck.element_name])
+
+        for door in self.sequence_solver.model.receiving_doors.values():
+            new_door_widget = QWidget()
+            new_door_element = Ui_simulation_door()
+            new_door_element.setupUi(new_door_widget)
+            new_door_element.door_name.setText(door.element_name)
+            self.simulationReceivingDoorsList.addWidget(new_door_widget)
+            for truck in receiving_truck_list:
+                if truck.current_door == door:
+                    self.simulationReceivingDoorsList.addWidget(truck_widget_dict[truck.element_name])
+
+        for door in self.sequence_solver.model.shipping_doors.values():
+            new_door_widget = QWidget()
+            new_door_element = Ui_simulation_door()
+            new_door_element.setupUi(new_door_widget)
+            new_door_element.door_name.setText(door.element_name)
+            self.simulationShippingDoorsList.addWidget(new_door_widget)
+            for truck in shipping_truck_list:
+                if truck.current_door == door:
+                    self.simulationShippingDoorsList.addWidget(truck_widget_dict[truck.element_name])
 
     def load_data(self):
         """
@@ -321,8 +388,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.enter_sequence_widget = EnterSequenceWidget(self.data, self.current_sequence)
         self.enter_sequence_widget.show()
         self.simulationStartButton.setEnabled(True)
-
-
 
 
     def gams_output(self):
