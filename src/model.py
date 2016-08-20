@@ -178,15 +178,24 @@ class Model(QThread):
             self.time_list.sort()
 
     def next_time(self):
-        self.current_time = self.time_list.pop(0)
-        #run trucks doors and station
-        if not self.check_done():
-            self.update_elements()
-            if not self.time_list:
-                self.time_list.append(self.current_time + 1)
-            print(self.current_time)
+        if self.time_list:
+            self.current_time = self.time_list.pop(0)
+            #run trucks doors and station
+            if not self.check_done():
+                self.update_elements()
+                if not self.time_list:
+                    self.time_list.append(self.current_time + 1)
+                print(self.current_time)
         else:
             print("Finished")
+
+    def calculate_errors(self):
+        """
+        calculate all error functions
+        :return:
+        """
+        pass
+        # return dict of errors
 
     def update_elements(self):
         """

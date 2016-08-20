@@ -45,6 +45,10 @@ class GeneralSolver(object):
         """
         moves the model forward
         """
-        self.model.next_time()
-        print("Times: ", self.model.time_list)
-        print("Finished: ", self.model.check_done())
+        if not self.model.check_done():
+            self.model.next_time()
+            return True
+        else:
+            errors = self.model.calculate_errors()
+
+            return False

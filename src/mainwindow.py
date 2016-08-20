@@ -15,6 +15,7 @@ from src.enter_sequence import EnterSequenceWidget
 from src.sequence import Sequence
 from windows.simulation_truck import Ui_simulation_truck
 from windows.simulation_door import Ui_simulation_door
+from collections import OrderedDict
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -28,11 +29,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setup_data()
         self.value_connections()
         self.connections()
-        self.results = {}
         self.combobox_coming_sequence = []
         self.combobox_going_sequence = []
         self.statusBar().showMessage('Ready')
         self.load_generated_data()
+        self.results = OrderedDict()
 
         self.showing_result = []
         self.result_times = {}
@@ -214,19 +215,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.simulation_set_tables()
         self.simulation_set_trucks()
         self.simulation_add_spacers()
+        self.enter_sequence_button.setEnabled(False)
         self.simulationStartButton.setEnabled(False)
         self.simulationStepForwardButton.setEnabled(True)
-        print(self.sequence_solver.model.time_list)
 
     def simulation_forward(self):
-        print("Simulation Forward")
-        self.sequence_solver.step_forward()
-        self.simulation_clear_layouts()
-        self.simulation_set_tables()
-        self.simulation_set_trucks()
-        self.simulation_add_spacers()
-        self.time.display(self.sequence_solver.model.current_time)
-        
+        if self.sequence_solver.step_forward():
+            self.simulation_clear_layouts()
+            self.simulation_set_tables()
+            self.simulation_set_trucks()
+            self.simulation_add_spacers()
+            self.time.display(self.sequence_solver.model.current_time)
+        else:
+            self.simulationStepForwardButton.setEnabled(False)
+            self.enter_sequence_button.setEnabled(True)
+            self.simulationStartButton.setEnabled(False)
+            # finished save results
+
+    def simulation_reset(self):
+        self.enter_sequence_button.setEnabled(True)
+        self.simulationStepForwardButton.setEnabled(False)
+        self.simulationStartButton.setEnabled(False)
 
     def simulation_set_tables(self):
         self.simulation_clear_layouts()
