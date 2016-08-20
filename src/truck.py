@@ -51,12 +51,14 @@ class Truck():
 
     def add_start_goods(self, start_goods):
         for i in range(len(start_goods)):
-            self.coming_good_dict[i] = start_goods[i]
+            self.coming_good_dict[str(i)] = start_goods[i]
             self.coming_good_store.add_good(start_goods[i], str(i), self.element_name)
 
     def add_last_goods(self, last_goods):
         for i in range(len(last_goods)):
-            self.going_good_dict[i] = last_goods[i]
+            self.going_good_dict[str(i)] = last_goods[i]
+            self.going_good_store.add_good_type(i)
+
 
     def show_goods(self):
         """shows goods of the truck in a dialog"""
@@ -177,8 +179,18 @@ class Truck():
         self.simulation_state = 2
         if self.check_next_state_time():
             self.truck_times["at the shipping door"] = self.current_time
-            #check enough goods
-            self.next_state()           
+            if self.station.good_store.check_enough(self.going_good_dict):
+                self.state += 2
+                total_good = 0
+                self.truck_times["started loading"] = self.current_time
+                for good_amount in self.going_good_dict.values():
+                    total_good += good_amount
+                self.next_state_time = self.current_time + self.good_loading_time * total_good
+            else:
+                self.state += 1
+                self.truck_times["not enough goods"] = self.current_time
+                self.next_state_time = -1
+            self.state_change = True
 
     def changeover_deploy(self):
         """
@@ -195,6 +207,7 @@ class Truck():
         changeover after process finished for all trucks
         """
         if self.check_next_state_time():
+            self.current_door.door_empty = True
             self.truck_times["departed from the door"] = self.current_time
             self.next_state()           
 
@@ -203,27 +216,48 @@ class Truck():
         changeover at mid for compound trucks
         """
         if self.check_next_state_time():
+            self.current_door.door_empty = True
+            self.current_door = self.second_door
             self.truck_times["started going to shipping side"] = self.current_time
-            self.next_state()           
+            self.next_state_time = self.current_time + self.truck_transfer_time
+            self.next_state()
 
     def not_enough_goods(self):
         """
         waiting for enough goods to load
         """
-        pass
+        if self.station.good_store.check_enough(self.going_good_dict):
+            total_good = 0
+            for good_amount in self.going_good_dict.values():
+                total_good += good_amount
+            self.next_state_time = self.current_time + self.good_loading_time * total_good
+            self.truck_times["started loading"] = self.current_time
+            self.next_state()
 
     def loading(self):
         """
         waiting to load goods
         """
-        pass
-        
+        if self.check_next_state_time():
+            if self.station.good_store.check_enough(self.going_good_dict):
+                removed = self.station.good_store.remove_good(self.going_good_dict)
+
+                self.going_good_store.add_good_dict(removed)
+                self.next_state_time = self.current_time + self.changeover_time
+                self.truck_times["finished loading"] = self.current_time
+                self.next_state()
+
     def deploying(self):
         """
         deploying for inbound and compound trucks
         """
         if self.check_next_state_time():
-            self.truck_times["finieshed deploying"] = self.current_time
+            self.current_door.transfer_finished = True
+            self.current_door.good_store.add_good_dict(self.coming_good_store.good_dictionary)
+            self.current_door.good_transfer_time = self.current_time + self.good_transfer_time
+            self.coming_good_store.reset_goods()
+            self.next_state_time = self.current_time + self.changeover_time
+            self.truck_times["finished deploying"] = self.current_time
             self.next_state()
 
     def done(self):

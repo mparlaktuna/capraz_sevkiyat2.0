@@ -13,10 +13,10 @@ class CompoundTruck(Truck):
         """
         truck transfer time for a compound truck
         """
-        
-        # if self.check_next_time():
-        #     self.next_state_time = self.current_time + 1
-        #     self.state += 1
+        self.simulation_state = 4
+        if self.check_next_state_time():
+            self.next_state_time = self.current_time + self.truck_transfer_time
+            self.next_state()
 
 
 

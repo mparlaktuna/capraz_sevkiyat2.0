@@ -68,7 +68,7 @@ class Model(QThread):
             name = 'receiving' + str(i)
             door = ReceivingDoor(name)
             self.receiving_doors[name] = door
-            # door.station = self.station
+            door.station = self.station
             self.all_doors[name] = door
             self.element_list.append(door)
 
@@ -76,7 +76,6 @@ class Model(QThread):
             name = 'shipping' + str(i)
             door = ShippingDoor(name)
             self.shipping_doors[name] = door
-            # door.station = self.station
             self.element_list.append(door)
             self.all_doors[name] = door
 
@@ -111,6 +110,8 @@ class Model(QThread):
 
             for door in self.receiving_doors.values():
                 door.truck_list = self.current_sequence.coming_sequence_element.sequence_dict[door.element_name]
+                for i in range(self.data.number_of_goods):
+                    door.good_store.add_good_type(str(i))
 
             for door in self.shipping_doors.values():
                 door.truck_list = self.current_sequence.going_sequence_element.sequence_dict[door.element_name]
@@ -142,7 +143,7 @@ class Model(QThread):
             truck.truck_transfer = self.data.truck_transfer_time
 
         for i in range(self.data.number_of_goods):
-            self.station.good_store.add_good_type(i)
+            self.station.good_store.add_good_type(str(i))
 
     def set_states(self):
         for truck in self.all_trucks.values():
@@ -195,6 +196,11 @@ class Model(QThread):
         for truck in self.all_trucks.values():
             truck.current_time = self.current_time
             result = truck.step()
+            if (result and (not result == -1)):
+                self.add_time(result)
+
+        for door in self.receiving_doors.values():
+            result = door.transfer_goods_to_station(self.current_time)
             if (result and (not result == -1)):
                 self.add_time(result)
 

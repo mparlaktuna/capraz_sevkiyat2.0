@@ -328,14 +328,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             elif truck.simulation_state == 4:
                 # transfer
                 transfer_truck_list.append(truck)
+
         for truck in coming_truck_list:
             self.simulationComingTruckList.addWidget(truck_widget_dict[truck.element_name])
+
+        for truck in done_truck_list:
+            self.simulationFinishedList.addWidget(truck_widget_dict[truck.element_name])
+
+        for truck in transfer_truck_list:
+            self.simulationCompoundTruckTransferList.addWidget(truck_widget_dict[truck.element_name])
 
         for door in self.sequence_solver.model.receiving_doors.values():
             new_door_widget = QWidget()
             new_door_element = Ui_simulation_door()
             new_door_element.setupUi(new_door_widget)
             new_door_element.door_name.setText(door.element_name)
+            new_door_element.show_truck_sequence_button.clicked.connect(door.show_sequence)
             self.simulationReceivingDoorsList.addWidget(new_door_widget)
             for truck in receiving_truck_list:
                 if truck.current_door == door:
@@ -351,19 +359,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if truck.current_door == door:
                     self.simulationShippingDoorsList.addWidget(truck_widget_dict[truck.element_name])
 
+        new_line_edit = QTextEdit()
+        new_line_edit.setText(self.sequence_solver.model.station.good_store.print_goods())
+        self.simulationStation.addWidget(new_line_edit)
+
     def load_data(self):
         """
         loads prev saved data
         :return:
         """
         # for fast loading data disable after finished and uncomment following
-        file_name = "/home/mustafa/Downloads/test202"
+        file_name = "C:/Users/mparl/Downloads/test202"
         # file_name, _ = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         try:
             self.data = pickle.load(open(file_name, 'rb'))
         except Exception as e:
             pass
-        #self.graphicsView.data = self.data
         self.solver.data = self.data
         self.setup_data()
         self.update_data_table()
