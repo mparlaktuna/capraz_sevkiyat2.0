@@ -19,6 +19,8 @@ class Truck():
         self.good_unloading_time = 0
         self.good_transfer_time = 0
         self.station = 0
+        self.lower_boundary = 0
+        self.upper_boundary = 0
         self.coming_good_store = GoodStore()
         self.going_good_store = GoodStore()
         self.coming_good_dict = dict()
@@ -208,6 +210,7 @@ class Truck():
         if self.check_next_state_time():
             self.current_door.door_empty = True
             self.truck_times["departed from the door"] = self.current_time
+            self.truck_times["done"] = self.current_time
             self.next_state()           
 
     def changeover_mid(self):

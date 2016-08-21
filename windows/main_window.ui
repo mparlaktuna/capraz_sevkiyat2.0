@@ -557,6 +557,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Time Limit</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLineEdit" name="time_limit_edit"/>
           </item>
           <item>
@@ -635,7 +642,7 @@
            <widget class="QLineEdit" name="result_Iteration_number_line_edit"/>
           </item>
           <item>
-           <widget class="QPushButton" name="result_show_best_solution">
+           <widget class="QPushButton" name="result_show_best_solution_button">
             <property name="text">
              <string>Show Best Solution</string>
             </property>

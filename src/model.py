@@ -29,6 +29,7 @@ class Model(QThread):
         self.all_doors = OrderedDict()
         self.element_list = []
         self.current_time = 0
+        self.time_limit = 0
         self.current_sequence = Sequence()
         self.done = False
         self.time_list = []
@@ -39,6 +40,7 @@ class Model(QThread):
         self.data = data
         self.solver_data = solver_data
         self.data_set_number = self.solver_data.data_set_number
+        self.time_limit = self.solver_data.time_limit
         print("Setting Data Set:", self.data_set_number)
         self.station = Station()
 
@@ -131,6 +133,10 @@ class Model(QThread):
             self.add_time(truck.coming_time)
             truck.station = self.station
 
+        for truck in self.going_trucks.values():
+            truck.lower_boundary = self.data.lower_boundaries[self.data_set_number][truck.element_name]
+            truck.upper_boundary = self.data.upper_boundaries[self.data_set_number][truck.element_name]
+
     def set_goods(self):
         for i, truck in enumerate(self.inbound_trucks.values()):
             truck.add_start_goods(self.data.inbound_goods[i])
@@ -195,8 +201,47 @@ class Model(QThread):
         calculate all error functions
         :return:
         """
+        tardiness_error = 0
+        earlines_tardiness_error = 0
+        late_truck_error = 0
+        cmax_error = self.current_time
+        truck_errors = OrderedDict()
+
+        for truck in self.going_trucks.values():
+            truck_error = OrderedDict()
+            done_time = truck.truck_times["done"]
+            tardiness = 0
+            earliness = 0
+            late_truck = 0
+            if done_time > truck.upper_boundary:
+                tardiness = done_time - truck.upper_boundary
+            if done_time < truck.lower_boundary:
+                earliness = truck.lower_boundary - done_time
+            if done_time > self.time_limit:
+                late_truck = 1
+
+            truck.truck_times["lower_boundary"] = truck.lower_boundary
+            truck.truck_times["upper_boundary"] = truck.upper_boundary
+            truck.truck_times["tardiness"] = tardiness
+            truck.truck_times["earliness"] = earliness
+            truck.truck_times["late_truck"] = late_truck
+
+            truck_error["tardiness"] = tardiness
+            truck_error["earliness"] = earliness
+            truck_error["late_truck"] = late_truck
+
+            truck_errors[truck.element_name] = truck_error
+
+            tardiness_error += tardiness
+            earlines_tardiness_error += earliness + tardiness
+            late_truck_error += late_truck
+
+        self.errors["tardiness"] = tardiness_error
+        self.errors["earlines_tardiness"] = earlines_tardiness_error
+        self.errors["late_truck"] = late_truck_error
+        self.errors["cmax"] = cmax_error
+        self.errors["truck_error_times"] = truck_errors
         return self.errors
-        # return dict of errors
 
     def return_truck_times(self):
         truck_times = OrderedDict()
@@ -233,9 +278,9 @@ class Model(QThread):
             if self.check_step_finish():
                 self.clear_step_finish()
                 self.next_time()
-
-    def generate_results(self, results=IterationResults()):
-        for truck in self.all_trucks:
-            results.truck_results[truck.element_name] = truck.return_truck_results()
-
-        return results
+    #
+    # def generate_results(self, results=IterationResults()):
+    #     for truck in self.all_trucks:
+    #         results.truck_results[truck.element_name] = truck.return_truck_results()
+    #
+    #     return results

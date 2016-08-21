@@ -54,7 +54,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.simulationStartButton.setEnabled(False)
         self.simulationStepForwardButton.setEnabled(False)
 
-        self.result_show_best_solution.setEnabled(False)
+        self.result_show_best_solution_button.setEnabled(False)
         self.result_show_errors_button.setEnabled(False)
         self.result_show_sequences_button.setEnabled(False)
         self.result_show_trucktimes_button.setEnabled(False)
@@ -88,6 +88,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.inboundArrivalTimeLineEdit.textChanged.connect(self.data.set_inbound_arrival_time)
         self.outboundArrivalTimeLineEdit.textChanged.connect(self.data.set_outbound_arrival_time)
         self.goodTransferTimeLineEdit.textChanged.connect(self.data.set_good_transfer_time)
+        self.time_limit_edit.textChanged.connect(self.set_time_limit)
         self.numberOfIterationsLineEdit.textChanged.connect(self.set_number_of_iterations)
         self.solverComboBox.currentTextChanged.connect(self.set_solver_algorithm)
         self.tempereature_line_edit.textChanged.connect(self.set_annealing_temperature)
@@ -98,9 +99,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.result_solution_name_combo_box.currentTextChanged.connect(self.show_result_update_solution_name)
         self.result_Iteration_number_line_edit.textChanged.connect(self.show_result_update_iteration_number)
 
+
     def set_solver_algorithm(self, value):
         if value:
             self.solver_data.algorithm_name = str(value)
+
+    def set_time_limit(self, value):
+        if value:
+            self.solver_data.time_limit = int(value)
 
     def set_data_set_number(self, value):
         if value:
@@ -214,6 +220,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.result_show_trucktimes_button.clicked.connect(self.show_result_show_truck_times)
         self.result_show_truckgoods_button.clicked.connect(self.show_result_show_finish_goods)
+        self.result_show_errors_button.clicked.connect(self.show_result_show_all_errors)
 
 
     def solve_data_set(self):
@@ -263,7 +270,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.result_solution_name_combo_box.addItems(self.results.keys())
         self.show_result_update_solution_name()
         self.result_solution_name_combo_box.currentTextChanged.connect(self.show_result_update_solution_name)
-        self.result_show_best_solution.setEnabled(True)
+        self.result_show_best_solution_button.setEnabled(True)
         self.result_show_errors_button.setEnabled(True)
         self.result_show_sequences_button.setEnabled(True)
         self.result_show_trucktimes_button.setEnabled(True)
@@ -534,7 +541,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return (2 * mu * tightness_factor * product_per_truck) / (2 - tightness_factor * mu * self.data.makespan_factor)
 
     def show_result_show_all_errors(self):
-        pass
+        error_dialog = QMessageBox()
+        error_dialog.setWindowTitle("Solutions of Objective Functions:")
+        message = "\n"
+        for error_name, errors in self.shoved_solution.errors.items():
+            if error_name == "truck_error_times":
+                for truck_name, error_list in errors.items():
+                    message += truck_name + ":\n"
+                    for error_name, error in error_list.items():
+                        message += "\t" + error_name + ": " + str(error) + "\n"
+            else:
+                message += error_name + ": "
+                message += str(errors) + "\n"
+
+        error_dialog.setText(message)
+        error_dialog.exec_()
 
     def show_result_show_all_sequences(self):
         pass
@@ -542,7 +563,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_result_show_truck_times(self):
         current_truck = self.result_truck_name_combo_box.currentText()
         time_dialog = QMessageBox()
-        time_dialog.setWindowTitle("Times of " + current_truck)
+        time_dialog.setWindowTitle("Times of:", current_truck)
         message = "\n"
         for time_name, times in self.shoved_solution.truck_times[current_truck].items():
             message += time_name + ": "
