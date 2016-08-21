@@ -2,20 +2,22 @@
 from src.model import Model
 from src.data_store import DataStore
 from src.solver import SolverData
-from src.solution_results import SolutionResults
 from src.sequence import Sequence
+from src.results import *
 
 class GeneralSolver(object):
 
     def __init__(self):
         self.iteration_number = 0
         self.solution_type = ""
+        self.solution_name = ""
         self.model = Model()
         self.solver_data = SolverData()
         self.data = DataStore()
-        self.results = SolutionResults()
+        self.iteration_results = IterationResults()
         #self.sequence_list = SequenceList()
         self.current_sequence = Sequence()
+
 
     def new_model(self):
         self.model = Model()
@@ -49,6 +51,8 @@ class GeneralSolver(object):
             self.model.next_time()
             return True
         else:
-            errors = self.model.calculate_errors()
-
+            self.save_results(self.model)
             return False
+
+    def save_results(self, model):
+        pass

@@ -25,6 +25,7 @@ class Model(QThread):
         self.all_trucks = OrderedDict()
         self.shipping_doors = OrderedDict()
         self.receiving_doors = OrderedDict()
+        self.errors = OrderedDict()
         self.all_doors = OrderedDict()
         self.element_list = []
         self.current_time = 0
@@ -194,8 +195,18 @@ class Model(QThread):
         calculate all error functions
         :return:
         """
-        pass
+        return self.errors
         # return dict of errors
+
+    def return_truck_times(self):
+        truck_times = OrderedDict()
+        for truck in self.all_trucks.values():
+            truck_times[truck.element_name] = truck.truck_times
+        return truck_times
+
+    def return_final_goods(self):
+        final_goods = OrderedDict()
+        return final_goods
 
     def update_elements(self):
         """

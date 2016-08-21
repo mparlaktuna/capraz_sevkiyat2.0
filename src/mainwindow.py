@@ -208,8 +208,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """
         start a simulation for one solution
         """
-        self.solution_name = "simulation_" + self.solver_data.function_type + "_" + str(self.solution_number)
+        self.solution_name = "simulation_" + str(self.solver_data.data_set_number) + "_" + str(self.solution_number)
+        self.solution_number += 1
         self.sequence_solver.set_data(self.solver_data, self.data)
+        self.sequence_solver.solution_name = self.solution_name
+        self.sequence_solver.solution_type = "simulation"
         self.current_sequence.print_sequence()
         self.sequence_solver.set_sequence(self.current_sequence)
         self.simulation_set_tables()
@@ -230,12 +233,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.simulationStepForwardButton.setEnabled(False)
             self.enter_sequence_button.setEnabled(True)
             self.simulationStartButton.setEnabled(False)
-            # finished save results
+            self.results[self.solution_name] = self.sequence_solver.iteration_results
+            self.update_results()
 
     def simulation_reset(self):
         self.enter_sequence_button.setEnabled(True)
         self.simulationStepForwardButton.setEnabled(False)
         self.simulationStartButton.setEnabled(False)
+
+    def update_results(self):
+        self.result_solution_name_combo_box.clear()
+        self.result_solution_name_combo_box.addItems(self.results.keys())
 
     def simulation_set_tables(self):
         self.simulation_clear_layouts()
