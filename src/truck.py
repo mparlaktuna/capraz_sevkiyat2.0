@@ -57,8 +57,7 @@ class Truck():
     def add_last_goods(self, last_goods):
         for i in range(len(last_goods)):
             self.going_good_dict[str(i)] = last_goods[i]
-            self.going_good_store.add_good_type(i)
-
+            self.going_good_store.add_good_type(str(i))
 
     def show_goods(self):
         """shows goods of the truck in a dialog"""

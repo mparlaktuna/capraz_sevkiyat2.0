@@ -206,6 +206,8 @@ class Model(QThread):
 
     def return_final_goods(self):
         final_goods = OrderedDict()
+        for truck in self.all_trucks.values():
+            final_goods[truck.element_name] = truck.going_good_store
         return final_goods
 
     def update_elements(self):

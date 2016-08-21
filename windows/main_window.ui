@@ -632,7 +632,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="Iteration_number"/>
+           <widget class="QLineEdit" name="result_Iteration_number_line_edit"/>
           </item>
           <item>
            <widget class="QPushButton" name="result_show_best_solution">

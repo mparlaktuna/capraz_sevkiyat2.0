@@ -16,6 +16,7 @@ from src.sequence import Sequence
 from windows.simulation_truck import Ui_simulation_truck
 from windows.simulation_door import Ui_simulation_door
 from collections import OrderedDict
+from src.results import *
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -34,6 +35,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.statusBar().showMessage('Ready')
         self.load_generated_data()
         self.results = OrderedDict()
+        self.shoved_solution_name = ""
+        self.shoved_iteration = IterationResults()
+        self.shoved_solution = ModelResult()
+        self.shoved_iteration_number = 0
 
         self.showing_result = []
         self.result_times = {}
@@ -49,6 +54,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.simulationStartButton.setEnabled(False)
         self.simulationStepForwardButton.setEnabled(False)
 
+        self.result_show_best_solution.setEnabled(False)
+        self.result_show_errors_button.setEnabled(False)
+        self.result_show_sequences_button.setEnabled(False)
+        self.result_show_trucktimes_button.setEnabled(False)
+        self.result_show_truckgoods_button.setEnabled(False)
 
     def setup_data(self):
         self.data_set_model = DataSetModel(self.data)
@@ -85,6 +95,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.number_of_tabu_neighbours_line_edit.textChanged.connect(self.set_tabu_neighbor_number)
         self.number_of_tabu_line_edit.textChanged.connect(self.set_tabu_number_tabu)
         self.data_set_spin_box.valueChanged.connect(self.set_data_set_number)
+        self.result_solution_name_combo_box.currentTextChanged.connect(self.show_result_update_solution_name)
+        self.result_Iteration_number_line_edit.textChanged.connect(self.show_result_update_iteration_number)
 
     def set_solver_algorithm(self, value):
         if value:
@@ -92,7 +104,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def set_data_set_number(self, value):
         if value:
-            self.solver_data.data_set_number = int(value)
+            self.solver_data.data_set_number = int(value) - 1
 
     def set_annealing_temperature(self, value):
         if value:
@@ -200,6 +212,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.enter_sequence_button.clicked.connect(self.enter_sequence)
         self.simulationStepForwardButton.clicked.connect(self.simulation_forward)
 
+        self.result_show_trucktimes_button.clicked.connect(self.show_result_show_truck_times)
+        self.result_show_truckgoods_button.clicked.connect(self.show_result_show_finish_goods)
+
+
     def solve_data_set(self):
         pass
         #solve depending on algorithms
@@ -242,8 +258,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.simulationStartButton.setEnabled(False)
 
     def update_results(self):
+        self.result_solution_name_combo_box.currentTextChanged.disconnect()
         self.result_solution_name_combo_box.clear()
         self.result_solution_name_combo_box.addItems(self.results.keys())
+        self.show_result_update_solution_name()
+        self.result_solution_name_combo_box.currentTextChanged.connect(self.show_result_update_solution_name)
+        self.result_show_best_solution.setEnabled(True)
+        self.result_show_errors_button.setEnabled(True)
+        self.result_show_sequences_button.setEnabled(True)
+        self.result_show_trucktimes_button.setEnabled(True)
+        self.result_show_truckgoods_button.setEnabled(True)
 
     def simulation_set_tables(self):
         self.simulation_clear_layouts()
@@ -508,3 +532,51 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def calculate_2dgj(self, tightness_factor, mu, product_per_truck):
         return (2 * mu * tightness_factor * product_per_truck) / (2 - tightness_factor * mu * self.data.makespan_factor)
+
+    def show_result_show_all_errors(self):
+        pass
+
+    def show_result_show_all_sequences(self):
+        pass
+
+    def show_result_show_truck_times(self):
+        current_truck = self.result_truck_name_combo_box.currentText()
+        time_dialog = QMessageBox()
+        time_dialog.setWindowTitle("Times of " + current_truck)
+        message = "\n"
+        for time_name, times in self.shoved_solution.truck_times[current_truck].items():
+            message += time_name + ": "
+            message += str(times) + "\n"
+
+        time_dialog.setText(message)
+        time_dialog.exec_()
+
+    def show_result_show_finish_goods(self):
+        current_truck = self.result_truck_name_combo_box.currentText()
+        print(current_truck)
+        print(self.shoved_solution.final_goods)
+        time_dialog = QMessageBox()
+        good_store = self.shoved_solution.final_goods[current_truck]
+        time_dialog.setWindowTitle("Goods of " + current_truck)
+        message = good_store.print_goods()
+
+        time_dialog.setText(message)
+        time_dialog.exec_()
+
+    def show_result_update_truck_list(self):
+        self.result_truck_name_combo_box.clear()
+        self.result_truck_name_combo_box.addItems(self.shoved_solution.truck_times.keys())
+
+    def show_result_update_iteration_number(self):
+        self.shoved_iteration_number = int(self.result_Iteration_number_line_edit.text()) - 1
+        if self.shoved_iteration_number < len(self.shoved_iteration.model_results):
+            self.shoved_solution = self.shoved_iteration.model_results[self.shoved_iteration_number]
+            self.show_result_update_truck_list()
+
+    def show_result_update_solution_name(self):
+        self.shoved_solution_name = self.result_solution_name_combo_box.currentText()
+        self.shoved_iteration = self.results[self.shoved_solution_name]
+        self.result_Iteration_number_line_edit.setText(str(1))
+
+    def show_result_show_best_solution(self):
+        pass
