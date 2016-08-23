@@ -253,11 +253,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #start solving
         while self.continue_solution:
             print("solution start")
-
             if self.solver.iteration_number < self.solver_data.number_of_iterations:
                 self.solver.next_iteration()
             else:
                 self.continue_solution = False
+
+        self.results[self.solution_name] = self.solver.iteration_results
+        self.update_results()
 
     def simulation_start(self):
         """
@@ -595,7 +597,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def show_result_show_truck_times(self):
         current_truck = self.result_truck_name_combo_box.currentText()
         time_dialog = QMessageBox()
-        time_dialog.setWindowTitle("Times of:", current_truck)
+        time_dialog.setWindowTitle("Times of:" + str(current_truck))
         message = "\n"
         for time_name, times in self.shoved_solution.truck_times[current_truck].items():
             message += time_name + ": "
@@ -606,8 +608,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def show_result_show_finish_goods(self):
         current_truck = self.result_truck_name_combo_box.currentText()
-        print(current_truck)
-        print(self.shoved_solution.final_goods)
         time_dialog = QMessageBox()
         good_store = self.shoved_solution.final_goods[current_truck]
         time_dialog.setWindowTitle("Goods of " + current_truck)

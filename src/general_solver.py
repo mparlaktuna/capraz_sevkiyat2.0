@@ -40,7 +40,6 @@ class GeneralSolver(object):
 
     def solve_iteration(self):
         while not self.iteration_saved:
-            #print("iteration")
             if not self.model.check_done():
                 self.model.next_time()
                 #print(self.model.current_time)

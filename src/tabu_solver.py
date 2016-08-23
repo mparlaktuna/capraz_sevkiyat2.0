@@ -9,3 +9,7 @@ class TabuSolver(GeneralSolver):
     def next_iteration(self):
         self.iteration_number += 1
         print(self.iteration_number)
+
+    def generate_next_iteration(self):
+        #self.set sequence
+        pass
