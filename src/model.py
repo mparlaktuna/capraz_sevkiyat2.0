@@ -164,6 +164,7 @@ class Model(QThread):
         self.time_list = []
         self.set_data(self.solver_data, self.data)
 
+
     def check_done(self):
         """
         check if all the trucks are finished
@@ -201,6 +202,7 @@ class Model(QThread):
         calculate all error functions
         :return:
         """
+        self.errors = OrderedDict()
         tardiness_error = 0
         earlines_tardiness_error = 0
         late_truck_error = 0
@@ -239,7 +241,7 @@ class Model(QThread):
             late_truck_error += late_truck
 
         self.errors["total_tardiness"] = tardiness_error
-        self.errors["earlines+tardiness"] = earlines_tardiness_error
+        self.errors["earliness+tardiness"] = earlines_tardiness_error
         self.errors["late_truck"] = late_truck_error
         self.errors["cmax"] = cmax_error
         self.errors["number_of_goods"] = number_of_goods

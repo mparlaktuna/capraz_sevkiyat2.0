@@ -559,7 +559,7 @@
           <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>Time Limit</string>
+             <string>Time Limit:</string>
             </property>
            </widget>
           </item>
@@ -570,6 +570,30 @@
            <widget class="QPushButton" name="solve_data_set_button">
             <property name="text">
              <string>Run</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>Times</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Data Set Number:</string>
             </property>
            </widget>
           </item>
@@ -653,16 +677,23 @@
         <item row="2" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
+           <widget class="QPushButton" name="result_show_all_errors_button">
+            <property name="text">
+             <string>Show Objective Function Results For All Iterations</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="result_show_errors_button">
             <property name="text">
-             <string>Show Objective Function Results</string>
+             <string>Show Objective Function Results For Iteration</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="result_show_sequences_button">
             <property name="text">
-             <string>Show All Sequences</string>
+             <string>Show Current Sequences</string>
             </property>
            </widget>
           </item>

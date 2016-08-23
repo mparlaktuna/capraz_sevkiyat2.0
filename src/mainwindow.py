@@ -232,6 +232,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.solver = AnnealingSolver()
             self.solver_data.function_type = str(self.function_combo_box.currentText())
             self.solution_name = "annealing_" + "_" + self.solver_data.function_type + "_"+str(self.solver_data.data_set_number) + "_" + str(self.solution_number)
+            self.solution_number += 1
             self.solver.set_data(self.solver_data, self.data)
             self.sequence_solver.solution_name = self.solution_name
             self.sequence_solver.solution_type = "annealing"
@@ -622,10 +623,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.result_truck_name_combo_box.addItems(self.shoved_solution.truck_times.keys())
 
     def show_result_update_iteration_number(self):
-        self.shoved_iteration_number = int(self.result_Iteration_number_line_edit.text()) - 1
-        if self.shoved_iteration_number < len(self.shoved_iteration.model_results):
-            self.shoved_solution = self.shoved_iteration.model_results[self.shoved_iteration_number]
-            self.show_result_update_truck_list()
+        number = self.result_Iteration_number_line_edit.text()
+        if not number:
+            number = 1
+        else:
+            try:
+                number = int(number)
+                self.shoved_iteration_number =  number - 1
+                if self.shoved_iteration_number < len(self.shoved_iteration.model_results):
+                    print("shoved updated")
+                    self.shoved_solution = self.shoved_iteration.model_results[self.shoved_iteration_number]
+                    self.show_result_update_truck_list()
+            except:
+                pass
+
 
     def show_result_update_solution_name(self):
         self.shoved_solution_name = self.result_solution_name_combo_box.currentText()
