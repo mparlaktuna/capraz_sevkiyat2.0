@@ -11,6 +11,8 @@ from models.data_set_model import DataSetModel
 from models.good_table_model import GoodTableModel
 from models.time_table_model import TimeTableModel
 from src.sequence_solver import SequenceSolver
+from src.annealing_solver import AnnealingSolver
+from src.tabu_solver import TabuSolver
 from src.enter_sequence import EnterSequenceWidget
 from src.sequence import Sequence
 from windows.simulation_truck import Ui_simulation_truck
@@ -40,6 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.shoved_solution = ModelResult()
         self.shoved_iteration_number = 0
 
+        self.continue_solution = True
         self.showing_result = []
         self.result_times = {}
         self.function_type = "normal"
@@ -165,7 +168,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.data.set_shipping_door_number(value)
 
     def set_number_of_iterations(self, value):
-        self.solver_data.number_of_iterations = value
+        self.solver_data.number_of_iterations = int(value)
 
     def update_data_table(self):
         """
@@ -222,10 +225,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.result_show_truckgoods_button.clicked.connect(self.show_result_show_finish_goods)
         self.result_show_errors_button.clicked.connect(self.show_result_show_all_errors)
 
-
     def solve_data_set(self):
-        pass
-        #solve depending on algorithms
+        if self.solver_data.algorithm_name == "annealing":
+            print("Solving for annealing")
+            self.solver = AnnealingSolver()
+            self.solver_data.function_type = str(self.function_combo_box.currentText())
+            self.solution_name = "annealing_" + "_" + self.solver_data.function_type + "_"+str(self.solver_data.data_set_number) + "_" + str(self.solution_number)
+            self.solver.set_data(self.solver_data, self.data)
+            self.sequence_solver.solution_name = self.solution_name
+            self.sequence_solver.solution_type = "annealing"
+            self.continue_solution = True
+            #generate sequence
+            #start solving
+
+
+        elif self.solver_data.algorithm_name == "TS":
+            print("Solving for tabu")
+            self.solver = TabuSolver()
+            self.solver_data.function_type = str(self.function_combo_box.currentText())
+            self.solution_name = "tabu_" + "_" + self.solver_data.function_type + "_"+str(self.solver_data.data_set_number) + "_" + str(self.solution_number)
+            self.solver.set_data(self.solver_data, self.data)
+            self.sequence_solver.solution_name = self.solution_name
+            self.sequence_solver.solution_type = "tabu"
+            self.continue_solution = True
+
+            #generate sequence
+            #start solving
+        while self.continue_solution:
+            print("solution start")
+
+            if self.solver.iteration_number < self.solver_data.number_of_iterations:
+                self.solver.next_iteration()
+            else:
+                self.continue_solution = False
 
     def simulation_start(self):
         """

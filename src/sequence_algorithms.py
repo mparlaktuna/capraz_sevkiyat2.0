@@ -8,13 +8,13 @@ import copy
 
 
 class SequenceAlgorithm():
+
     def __init__(self, data=DataStore()):
         self.algorithm_name = ""
         self.data_set_number = 0
         self.data = data
         self.arrivals = {}
         self.sequence = Sequence(self.data)
-        self.sequence_list = SequenceList()
 
     def set_data_set_number(self, number, data):
         self.data = data
@@ -29,6 +29,8 @@ class SequenceAlgorithm():
         for i in range(self.data.number_of_receiving_doors - 1):
             self.sequence.coming_sequence.insert(step * (i+1), '0')
 
+
+
         out_trucks = [('outbound' + str(i)) for i in range(self.data.number_of_outbound_trucks)]
         comp_trucks = [('compound' + str(i)) for i in range(self.data.number_of_compound_trucks)]
         sorted_out = sorted(self.arrivals.items(), key=operator.itemgetter(1))
@@ -39,7 +41,5 @@ class SequenceAlgorithm():
         for i in range(self.data.number_of_shipping_doors - 1):
             self.sequence.going_sequence.insert(step * (i+1), '0')
 
-        self.sequence_list.add_sequence(self.sequence)
-
-    def next_sequence(self):
-        return self.sequence_list.last_sequence()
+        self.sequence.set_sequences(self.sequence.coming_sequence, self.sequence.going_sequence)
+        return self.sequence

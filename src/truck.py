@@ -114,7 +114,6 @@ class Truck():
         """
         one tep forward
         """
-        print("step:", self.element_name, self.state)
         state_name = self.state_list[self.state]
         self.state_change = False        
         self.state_functions[state_name]()
@@ -135,7 +134,6 @@ class Truck():
     def coming (self):
         """truck coming"""
         if self.check_next_state_time():
-            print("truck has come")
             self.truck_times["arrival"] = self.current_time
 
             if self.current_door.check_door(self.element_name):
@@ -146,7 +144,7 @@ class Truck():
                 self.next_state_time = -1
             self.state_change = True
         else:
-            print("truck is coming")
+            pass
 
     def next_state(self):
         """

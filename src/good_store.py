@@ -27,7 +27,6 @@ class GoodStore():
         return sum(self.good_amounts.values())
 
     def check_enough(self, good_dict):
-        print("check enough")
         enough = False
         for good_name, good_amount in good_dict.items():
             good_name = str(good_name)

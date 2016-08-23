@@ -13,7 +13,6 @@ class SequenceList():
 
     def add_sequence(self, sequence):
         self.sequence_list.append(sequence)
-        self.best_sequence = sequence
 
     def last_sequence(self):
         return self.sequence_list[-1]

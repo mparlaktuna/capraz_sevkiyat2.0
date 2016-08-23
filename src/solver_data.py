@@ -7,5 +7,5 @@ class SolverData:
         self.annealing_decay_factor = 0.9
         self.tabu_number_of_neighbors = 5
         self.tabu_number_of_tabu = 4
-        self.function_type = "normal"
+        self.function_type = "earliness+tardiness"
         self.time_limit = 0

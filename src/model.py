@@ -41,7 +41,7 @@ class Model(QThread):
         self.solver_data = solver_data
         self.data_set_number = self.solver_data.data_set_number
         self.time_limit = self.solver_data.time_limit
-        print("Setting Data Set:", self.data_set_number)
+        #print("Setting Data Set:", self.data_set_number)
         self.station = Station()
 
         for i in range(self.data.number_of_inbound_trucks):
@@ -92,6 +92,7 @@ class Model(QThread):
     def set_sequence(self, sequence):
         self.current_sequence = sequence
         try:
+
             for truck in self.inbound_trucks.values():
                 coming_door_name = self.current_sequence.coming_sequence_element.get_door_name(truck.element_name)
                 truck.first_door = self.all_doors[coming_door_name]
@@ -158,11 +159,10 @@ class Model(QThread):
             truck.current_time = 0
 
     def reset_model(self):
-        print("Model Reset")
+
         self.current_time = 0
         self.time_list = []
-        self.set_states()
-        self.set_goods()
+        self.set_data(self.solver_data, self.data)
 
     def check_done(self):
         """
@@ -192,7 +192,7 @@ class Model(QThread):
                 self.update_elements()
                 if not self.time_list:
                     self.time_list.append(self.current_time + 1)
-                print(self.current_time)
+                #print(self.current_time)
         else:
             print("Finished")
 
@@ -205,6 +205,7 @@ class Model(QThread):
         earlines_tardiness_error = 0
         late_truck_error = 0
         cmax_error = self.current_time
+        number_of_goods = 0
         truck_errors = OrderedDict()
 
         for truck in self.going_trucks.values():
@@ -218,6 +219,7 @@ class Model(QThread):
             if done_time < truck.lower_boundary:
                 earliness = truck.lower_boundary - done_time
             if done_time > self.time_limit:
+                number_of_goods += truck.going_good_store.calculate_total()
                 late_truck = 1
 
             truck.truck_times["lower_boundary"] = truck.lower_boundary
@@ -236,10 +238,11 @@ class Model(QThread):
             earlines_tardiness_error += earliness + tardiness
             late_truck_error += late_truck
 
-        self.errors["tardiness"] = tardiness_error
-        self.errors["earlines_tardiness"] = earlines_tardiness_error
+        self.errors["total_tardiness"] = tardiness_error
+        self.errors["earlines+tardiness"] = earlines_tardiness_error
         self.errors["late_truck"] = late_truck_error
         self.errors["cmax"] = cmax_error
+        self.errors["number_of_goods"] = number_of_goods
         self.errors["truck_error_times"] = truck_errors
         return self.errors
 
@@ -259,7 +262,6 @@ class Model(QThread):
         """
         updates every element (truck, door and station)
         """
-        print("update elements")
         for truck in self.all_trucks.values():
             truck.current_time = self.current_time
             result = truck.step()
