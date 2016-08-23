@@ -39,8 +39,6 @@ class GeneralSolver(object):
 
     def start_iteration(self):
         self.model.reset_model()
-
-        pass
         # start model solve
 
     def step_forward(self):
