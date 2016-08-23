@@ -29,8 +29,6 @@ class SequenceAlgorithm():
         for i in range(self.data.number_of_receiving_doors - 1):
             self.sequence.coming_sequence.insert(step * (i+1), '0')
 
-
-
         out_trucks = [('outbound' + str(i)) for i in range(self.data.number_of_outbound_trucks)]
         comp_trucks = [('compound' + str(i)) for i in range(self.data.number_of_compound_trucks)]
         sorted_out = sorted(self.arrivals.items(), key=operator.itemgetter(1))
@@ -43,3 +41,23 @@ class SequenceAlgorithm():
 
         self.sequence.set_sequences(self.sequence.coming_sequence, self.sequence.going_sequence)
         return self.sequence
+
+    def generate_random(self, prev_sequence):
+        sequence = copy.deepcopy(prev_sequence)
+        a = random.choice(range(len(sequence)))
+        b = random.choice(range(len(sequence)))
+        if a == b:
+            sequence = self.generate_random(sequence)
+        else:
+            sequence[b], sequence[a] = sequence[a], sequence[b]
+        return sequence
+
+    def generate_next_sequence(self, prev_sequence=Sequence()):
+        new_coming = self.generate_random(prev_sequence.coming_sequence)
+        new_going = self.generate_random(prev_sequence.going_sequence)
+        prev_sequence.coming_sequence = new_coming
+        prev_sequence.going_sequence = new_going
+        self.sequence = prev_sequence
+        self.sequence.set_sequences(self.sequence.coming_sequence, self.sequence.going_sequence)
+        return self.sequence
+

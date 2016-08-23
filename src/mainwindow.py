@@ -220,6 +220,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.simulationStartButton.clicked.connect(self.simulation_start)
         self.enter_sequence_button.clicked.connect(self.enter_sequence)
         self.simulationStepForwardButton.clicked.connect(self.simulation_forward)
+        self.simulation_reset_button.clicked.connect(self.simulation_reset)
 
         self.result_show_trucktimes_button.clicked.connect(self.show_result_show_truck_times)
         self.result_show_truckgoods_button.clicked.connect(self.show_result_show_finish_goods)
@@ -249,8 +250,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.sequence_solver.solution_type = "tabu"
             self.continue_solution = True
 
-            #generate sequence
-            #start solving
         while self.continue_solution:
             print("solution start")
             if self.solver.iteration_number < self.solver_data.number_of_iterations:
@@ -436,6 +435,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             new_door_element = Ui_simulation_door()
             new_door_element.setupUi(new_door_widget)
             new_door_element.door_name.setText(door.element_name)
+            new_door_element.show_truck_sequence_button.clicked.connect(door.show_sequence)
+
             self.simulationShippingDoorsList.addWidget(new_door_widget)
             for truck in shipping_truck_list:
                 if truck.current_door == door:

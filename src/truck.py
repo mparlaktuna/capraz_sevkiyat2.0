@@ -179,6 +179,9 @@ class Truck():
         if self.check_next_state_time():
             self.truck_times["at the shipping door"] = self.current_time
             if self.station.good_store.check_enough(self.going_good_dict):
+                removed = self.station.good_store.remove_good(self.going_good_dict)
+                self.going_good_store.add_good_dict(removed)
+
                 self.state += 2
                 total_good = 0
                 self.truck_times["started loading"] = self.current_time
@@ -227,6 +230,9 @@ class Truck():
         waiting for enough goods to load
         """
         if self.station.good_store.check_enough(self.going_good_dict):
+            removed = self.station.good_store.remove_good(self.going_good_dict)
+            self.going_good_store.add_good_dict(removed)
+
             total_good = 0
             for good_amount in self.going_good_dict.values():
                 total_good += good_amount
@@ -239,13 +245,9 @@ class Truck():
         waiting to load goods
         """
         if self.check_next_state_time():
-            if self.station.good_store.check_enough(self.going_good_dict):
-                removed = self.station.good_store.remove_good(self.going_good_dict)
-
-                self.going_good_store.add_good_dict(removed)
-                self.next_state_time = self.current_time + self.changeover_time
-                self.truck_times["finished loading"] = self.current_time
-                self.next_state()
+            self.next_state_time = self.current_time + self.changeover_time
+            self.truck_times["finished loading"] = self.current_time
+            self.next_state()
 
     def deploying(self):
         """

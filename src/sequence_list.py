@@ -15,4 +15,5 @@ class SequenceList():
         self.sequence_list.append(sequence)
 
     def last_sequence(self):
-        return self.sequence_list[-1]
+        if self.sequence_list:
+            return self.sequence_list[-1]
