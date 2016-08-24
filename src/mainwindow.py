@@ -62,6 +62,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.result_show_sequences_button.setEnabled(False)
         self.result_show_trucktimes_button.setEnabled(False)
         self.result_show_truckgoods_button.setEnabled(False)
+        self.run_simulation_button.setEnabled(False)
 
     def setup_data(self):
         self.data_set_model = DataSetModel(self.data)
@@ -221,6 +222,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.enter_sequence_button.clicked.connect(self.enter_sequence)
         self.simulationStepForwardButton.clicked.connect(self.simulation_forward)
         self.simulation_reset_button.clicked.connect(self.simulation_reset)
+        self.run_simulation_button.clicked.connect(self.simulation_run)
 
         self.result_show_trucktimes_button.clicked.connect(self.show_result_show_truck_times)
         self.result_show_truckgoods_button.clicked.connect(self.show_result_show_finish_goods)
@@ -278,6 +280,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.enter_sequence_button.setEnabled(False)
         self.simulationStartButton.setEnabled(False)
         self.simulationStepForwardButton.setEnabled(True)
+        self.run_simulation_button.setEnabled(True)
 
     def simulation_forward(self):
         if self.sequence_solver.step_forward():
@@ -286,12 +289,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.simulation_set_trucks()
             self.simulation_add_spacers()
             self.time.display(self.sequence_solver.model.current_time)
+            return True
         else:
             self.simulationStepForwardButton.setEnabled(False)
             self.enter_sequence_button.setEnabled(True)
             self.simulationStartButton.setEnabled(False)
             self.results[self.solution_name] = self.sequence_solver.iteration_results
             self.update_results()
+            return False
+
+    def simulation_run(self):
+        simulation_continue = True
+        while simulation_continue:
+            simulation_continue = self.simulation_forward()
 
     def simulation_reset(self):
         self.enter_sequence_button.setEnabled(True)

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1274</width>
+    <width>1428</width>
     <height>896</height>
    </rect>
   </property>
@@ -748,6 +748,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="run_simulation_button">
+            <property name="text">
+             <string>Run</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="simulation_reset_button">
             <property name="text">
              <string>Reset</string>
@@ -795,7 +802,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1274</width>
+     <width>1428</width>
      <height>21</height>
     </rect>
    </property>

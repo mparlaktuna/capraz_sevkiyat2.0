@@ -33,6 +33,7 @@ class Truck():
         self.current_door = ""
         self.next_state_time = 0
         self.simulation_state = 0
+        self.truck_transfer_time = 0
 
         # define state functions
         self.state_functions["coming"] = self.coming
@@ -94,7 +95,8 @@ class Truck():
         message += "\n"
 
         message += "Next State: "
-        message += self.state_list[self.state + 1]
+        if self.state < len(self.state_list) - 1:
+            message += self.state_list[self.state + 1]
         message += "\n"
         message += "Next state Time: "
         message += str(self.next_state_time)

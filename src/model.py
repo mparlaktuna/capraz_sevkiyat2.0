@@ -64,7 +64,7 @@ class Model(QThread):
             self.compound_trucks[name] = truck
             self.coming_trucks[name] = truck
             self.going_trucks[name] = truck
-
+            truck.truck_transfer_time = data.truck_transfer_time
             self.all_trucks[name] = truck
 
         for i in range(self.data.number_of_receiving_doors):

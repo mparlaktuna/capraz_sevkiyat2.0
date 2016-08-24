@@ -15,7 +15,8 @@ class CompoundTruck(Truck):
         """
         self.simulation_state = 4
         if self.check_next_state_time():
-            self.next_state_time = self.current_time + self.truck_transfer_time
+            self.truck_times["Arrived to the Shipping Side"] = self.current_time
+            self.next_state_time = -1
             self.next_state()
 
 
