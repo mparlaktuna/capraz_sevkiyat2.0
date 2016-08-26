@@ -463,8 +463,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         :return:
         """
         # for fast loading data disable after finished and uncomment following
-        file_name = "C:/Users/mparl/Downloads/test202"
-        # file_name, _ = QFileDialog.getOpenFileName(self, 'Open file', '/home')
+        # file_name = "C:/Users/mparl/Downloads/test202"
+        file_name, _ = QFileDialog.getOpenFileName(self, 'Open file', '/home')
         try:
             self.data = pickle.load(open(file_name, 'rb'))
         except Exception as e:
